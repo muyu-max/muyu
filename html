@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>木千余 - 穆青宇的个人网站</title>
+    <style>
+        :root {
+            --sidebar-bg: #f5ede3;
+            --main-bg: #fefdfb;
+            --text-primary: #3d3630;
+            --text-secondary: #6b5f55;
+            --text-muted: #9a8d82;
+            --border-subtle: #e8e0d5;
+            --accent-novel: #c97d60;
+            --accent-prose: #b8936e;
+            --accent-essay: #7a9a7e;
+            --accent-blog: #6b8a9e;
+            --accent-photo: #8b7aa0;
+            --accent-mood: #c47d8b;
+            --card-shadow: 0 1px 3px rgba(60, 40, 20, 0.06), 0 1px 8px rgba(60, 40, 20, 0.04);
+            --card-shadow-hover: 0 3px 12px rgba(60, 40, 20, 0.10), 0 2px 20px rgba(60, 40, 20, 0.06);
+            --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --sidebar-width: 270px;
+            --topbar-height: 56px;
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --radius-full: 50%;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: "PingFang SC", "Noto Serif SC", "Source Han Serif SC", "STSong", "Songti SC", "Hiragino Mincho Pro", "Georgia", "Times New Roman", serif;
+            background: var(--main-bg);
+            color: var(--text-primary);
+            line-height: 1.7;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            letter-spacing: 0.02em;
+        }
+
+        /* ========== 整体布局容器 ========== */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* ========== 左侧边栏 (桌面端sticky) ========== */
+        .sidebar {
+            width: var(--sidebar-width);
+            min-width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            padding: 40px 28px 32px;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-y: auto;
+            z-index: 10;
+            border-right: 1px solid var(--border-subtle);
+            transition: var(--transition-smooth);
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #d5cbc0;
+            border-radius: 4px;
+        }
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar-avatar-wrap {
+            flex-shrink: 0;
+            margin-bottom: 16px;
+        }
+        .sidebar-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: var(--radius-full);
+            object-fit: cover;
+            border: 3px solid #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            transition: var(--transition-smooth);
+            background: #e8ddd0;
+        }
+        .sidebar-avatar:hover {
+            transform: scale(1.04);
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.13);
+        }
+        .sidebar-name {
+            font-size: 1.35rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: 0.06em;
+            margin-bottom: 28px;
+            flex-shrink: 0;
+            text-align: center;
+        }
+        .sidebar-recent-title {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 14px;
+            flex-shrink: 0;
+            text-align: center;
+            border-bottom: 1px solid var(--border-subtle);
+            padding-bottom: 10px;
+            width: 100%;
+        }
+        .sidebar-recent-list {
+            list-style: none;
+            width: 100%;
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .sidebar-recent-item {
+            cursor: pointer;
+            padding: 9px 12px;
+            border-radius: var(--radius-sm);
+            transition: var(--transition-smooth);
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+            border-left: 2px solid transparent;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .sidebar-recent-item:hover {
+            background: #ede3d6;
+            color: var(--text-primary);
+            border-left-color: #c9a87c;
+            padding-left: 16px;
+        }
+        .sidebar-recent-item .recent-date {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            display: block;
+            margin-top: 1px;
+        }
+        .sidebar-recent-empty {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            text-align: center;
+            padding: 20px 0;
+            font-style: italic;
+        }
+
+        /* ========== 移动端顶部条 ========== */
+        .mobile-topbar {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--topbar-height);
+            background: var(--sidebar-bg);
+            z-index: 100;
+            align-items: center;
+            padding: 0 16px;
+            border-bottom: 1px solid var(--border-subtle);
+            gap: 12px;
+        }
+        .mobile-topbar .mt-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: var(--radius-full);
+            object-fit: cover;
+            flex-shrink: 0;
+            border: 2px solid #fff;
+            background: #e8ddd0;
+        }
+        .mobile-topbar .mt-name {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--text-primary);
+            flex: 1;
+            letter-spacing: 0.04em;
+        }
+        .mobile-topbar .mt-recent-btn {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            background: #ede3d6;
+            border: none;
+            padding: 7px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            letter-spacing: 0.04em;
+            transition: var(--transition-smooth);
+            white-space: nowrap;
+            font-family: inherit;
+        }
+        .mobile-topbar .mt-recent-btn:active {
+            background: #dccdb8;
+            transform: scale(0.96);
+        }
+        .mobile-recent-panel {
+            display: none;
+            position: fixed;
+            top: var(--topbar-height);
+            left: 0;
+            right: 0;
+            background: #faf6f0;
+            z-index: 99;
+            border-bottom: 1px solid var(--border-subtle);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+            padding: 12px 16px;
+            max-height: 220px;
+            overflow-y: auto;
+            transform: translateY(-8px);
+            opacity: 0;
+            transition: transform 0.25s ease, opacity 0.25s ease;
+            pointer-events: none;
+        }
+        .mobile-recent-panel.open {
+            display: block;
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .mobile-recent-panel .mrp-item {
+            display: block;
+            padding: 10px 12px;
+            cursor: pointer;
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            border-left: 2px solid transparent;
+            transition: var(--transition-smooth);
+            margin-bottom: 2px;
+        }
+        .mobile-recent-panel .mrp-item:hover,
+        .mobile-recent-panel .mrp-item:active {
+            background: #ede3d6;
+            border-left-color: #c9a87c;
+            color: var(--text-primary);
+        }
+        .mobile-recent-panel .mrp-date {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            display: block;
+        }
+        .mobile-recent-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 98;
+            background: rgba(0, 0, 0, 0.15);
+            opacity: 0;
+            transition: opacity 0.25s ease;
+            pointer-events: none;
+        }
+        .mobile-recent-overlay.open {
+            display: block;
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* ========== 右侧主体 ========== */
+        .main-content {
+            flex: 1;
+            padding: 40px 44px;
+            min-height: 100vh;
+            background: var(--main-bg);
+            transition: background 0.4s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 面包屑导航 */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+            letter-spacing: 0.03em;
+        }
+        .breadcrumb span {
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .breadcrumb span:hover {
+            color: var(--text-primary);
+            text-decoration: underline;
+        }
+        .breadcrumb .sep {
+            cursor: default;
+            color: #c5bdb4;
+            text-decoration: none;
+        }
+        .breadcrumb .current {
+            color: var(--text-primary);
+            font-weight: 500;
+            cursor: default;
+            text-decoration: none;
+        }
+
+        /* ========== 首页分类入口 ========== */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 22px;
+            margin-top: 8px;
+        }
+        .category-card {
+            background: #fff;
+            border-radius: var(--radius-md);
+            padding: 32px 24px 26px;
+            text-align: center;
+            cursor: pointer;
+            border: 1px solid var(--border-subtle);
+            box-shadow: var(--card-shadow);
+            transition: var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .category-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--cat-accent, #c9a87c);
+            border-radius: 0 0 3px 3px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .category-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--card-shadow-hover);
+            border-color: #d5cbc0;
+        }
+        .category-card:hover::before {
+            opacity: 1;
+        }
+        .category-card:active {
+            transform: scale(0.97);
+        }
+        .category-icon {
+            font-size: 2.6rem;
+            margin-bottom: 10px;
+            display: block;
+            transition: transform 0.3s;
+        }
+        .category-card:hover .category-icon {
+            transform: scale(1.12);
+        }
+        .category-label {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: 0.05em;
+        }
+        .category-count {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* ========== 作品列表页 ========== */
+        .work-list {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            animation: fadeInUp 0.4s ease;
+        }
+        .work-card {
+            display: flex;
+            gap: 20px;
+            background: #fff;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            cursor: pointer;
+            border: 1px solid var(--border-subtle);
+            box-shadow: var(--card-shadow);
+            transition: var(--transition-smooth);
+            -webkit-tap-highlight-color: transparent;
+        }
+        .work-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--card-shadow-hover);
+            border-color: #d5cbc0;
+        }
+        .work-card:active {
+            transform: scale(0.985);
+        }
+        .work-card-cover {
+            width: 160px;
+            min-width: 160px;
+            height: 120px;
+            object-fit: cover;
+            background: #e8e0d5;
+            flex-shrink: 0;
+        }
+        .work-card-info {
+            padding: 16px 20px 16px 4px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex: 1;
+            min-width: 0;
+        }
+        .work-card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            letter-spacing: 0.03em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .work-card-meta {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+        .work-card-summary {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* ========== 详情页 ========== */
+        .detail-page {
+            animation: fadeInUp 0.4s ease;
+            max-width: 720px;
+            margin: 0 auto;
+        }
+        .detail-cover {
+            width: 100%;
+            max-height: 380px;
+            object-fit: cover;
+            border-radius: var(--radius-lg);
+            margin-bottom: 24px;
+            background: #e8e0d5;
+            box-shadow: var(--card-shadow);
+        }
+        .detail-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: 0.04em;
+            margin-bottom: 6px;
+        }
+        .detail-meta {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 22px;
+            letter-spacing: 0.03em;
+        }
+        .detail-body {
+            font-size: 1rem;
+            line-height: 1.9;
+            color: var(--text-primary);
+            letter-spacing: 0.025em;
+            white-space: pre-wrap;
+        }
+        .detail-body p {
+            margin-bottom: 1.2em;
+        }
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            letter-spacing: 0.04em;
+            transition: color 0.2s;
+            margin-bottom: 20px;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            background: none;
+            border: none;
+            font-family: inherit;
+            padding: 6px 0;
+        }
+        .back-btn:hover {
+            color: var(--text-primary);
+        }
+        .back-btn .arrow {
+            transition: transform 0.2s;
+            display: inline-block;
+        }
+        .back-btn:hover .arrow {
+            transform: translateX(-4px);
+        }
+
+        /* ========== 动画 ========== */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* ========== 响应式设计 ========== */
+        @media (max-width: 900px) {
+            .category-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 14px;
+            }
+            .main-content {
+                padding: 24px 16px;
+            }
+            .work-card-cover {
+                width: 110px;
+                min-width: 110px;
+                height: 90px;
+            }
+            .work-card-info {
+                padding: 10px 14px 10px 2px;
+            }
+            .work-card-title {
+                font-size: 0.95rem;
+            }
+            .work-card-summary {
+                font-size: 0.8rem;
+                -webkit-line-clamp: 2;
+            }
+            .detail-title {
+                font-size: 1.4rem;
+            }
+            .detail-cover {
+                max-height: 240px;
+                border-radius: var(--radius-md);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                flex-direction: column;
+                padding-top: var(--topbar-height);
+            }
+            .sidebar {
+                display: none;
+            }
+            .mobile-topbar {
+                display: flex;
+            }
+            .mobile-recent-panel,
+            .mobile-recent-overlay {
+                display: block;
+            }
+            .mobile-recent-panel {
+                display: none;
+            }
+            .mobile-recent-panel.open {
+                display: block;
+            }
+            .main-content {
+                padding: 20px 14px 32px;
+                min-height: calc(100vh - var(--topbar-height));
+            }
+            .category-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+            .category-card {
+                padding: 22px 16px 18px;
+            }
+            .category-icon {
+                font-size: 2rem;
+            }
+            .category-label {
+                font-size: 0.95rem;
+            }
+            .work-card {
+                flex-direction: row;
+                gap: 12px;
+            }
+            .work-card-cover {
+                width: 90px;
+                min-width: 90px;
+                height: 75px;
+                border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+            }
+            .work-card-info {
+                padding: 10px 12px 10px 0;
+            }
+            .work-card-title {
+                font-size: 0.9rem;
+            }
+            .work-card-summary {
+                font-size: 0.76rem;
+                -webkit-line-clamp: 2;
+            }
+            .detail-page {
+                max-width: 100%;
+            }
+            .detail-title {
+                font-size: 1.3rem;
+            }
+            .detail-body {
+                font-size: 0.92rem;
+                line-height: 1.8;
+            }
+            .breadcrumb {
+                font-size: 0.78rem;
+                margin-bottom: 18px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .category-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+            .category-card {
+                padding: 18px 10px 14px;
+                border-radius: var(--radius-sm);
+            }
+            .category-icon {
+                font-size: 1.6rem;
+                margin-bottom: 4px;
+            }
+            .category-label {
+                font-size: 0.85rem;
+            }
+            .category-count {
+                font-size: 0.7rem;
+            }
+            .work-card-cover {
+                width: 70px;
+                min-width: 70px;
+                height: 60px;
+            }
+            .work-card-title {
+                font-size: 0.82rem;
+            }
+            .work-card-summary {
+                font-size: 0.72rem;
+                -webkit-line-clamp: 1;
+            }
+            .work-card-meta {
+                font-size: 0.68rem;
+            }
+            .main-content {
+                padding: 14px 10px 28px;
+            }
+            .detail-title {
+                font-size: 1.15rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- ==================== 桌面端左侧边栏 ==================== -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-avatar-wrap">
+                <img
+                class="sidebar-avatar"
+                src="https://picsum.photos/seed/muqingyu-avatar/200/200"
+                alt="穆青宇头像"
+                loading="eager"
+                onerror="this.style.background='#d5c4a8'; this.alt='头像占位';"
+                >
+            </div>
+            <div class="sidebar-name">穆青宇</div>
+            <div class="sidebar-recent-title">最近发布</div>
+            <ul class="sidebar-recent-list" id="sidebarRecentList">
+                <li class="sidebar-recent-empty">加载中…</li>
+            </ul>
+        </aside>
+
+        <!-- ==================== 移动端顶部条 ==================== -->
+        <div class="mobile-topbar" id="mobileTopbar">
+            <img
+            class="mt-avatar"
+            src="https://picsum.photos/seed/muqingyu-avatar/200/200"
+            alt="穆青宇头像"
+            onerror="this.style.background='#d5c4a8'; this.alt='头像占位';"
+            >
+            <span class="mt-name">穆青宇</span>
+            <button class="mt-recent-btn" id="mtRecentBtn" aria-label="展开最近发布">最新 ▾</button>
+        </div>
+        <div class="mobile-recent-overlay" id="mobileRecentOverlay"></div>
+        <div class="mobile-recent-panel" id="mobileRecentPanel">
+            <div id="mobileRecentList" style="font-size:0.82rem;color:var(--text-muted);text-align:center;padding:10px;">加载中…</div>
+        </div>
+
+        <!-- ==================== 右侧主体内容 ==================== -->
+        <main class="main-content" id="mainContent">
+            <!-- 动态渲染 -->
+        </main>
+    </div>
+
+    <script>
+        (function() {
+            // ==================== 数据定义 ====================
+            // 【注意】以下所有作品数据均为示例/占位数据，实际使用时请替换为真实内容。
+            // 每个作品中的 content 字段开头均标注了"【待替换】"，提示该位置需替换为真实数据。
+            // 封面图使用 picsum 占位图服务，实际部署时请替换为自有图片资源。
+
+            const WORKS_DATA = [
+                // ===== 小说 (novel) =====
+                {
+                    id: 'novel-001',
+                    category: '小说',
+                    title: '深夜咖啡馆',
+                    date: '2026-07-05',
+                    cover: 'https://picsum.photos/seed/novel-cafe/400/280',
+                    summary: '在城市的转角处，有一家只在深夜开门的咖啡馆，每个客人都带着故事而来。',
+                    content: '【待替换】\n\n深夜的街道上，路灯将影子拉得很长。我推开那扇不起眼的木门，铃铛发出清脆的声响。咖啡馆里只有三两个客人，每个人都沉浸在自己的世界里。老板是个沉默的中年男人，他看了我一眼，点了点头，仿佛早已知道我会来。\n\n"来杯什么？"他问。\n\n"你推荐吧。"\n\n他转身开始研磨咖啡豆，空气中弥漫着深烘豆特有的焦香。我选了一个靠窗的位子坐下，窗外的城市正在沉睡，而这里，故事才刚刚开始……'
+                },
+                {
+                    id: 'novel-002',
+                    category: '小说',
+                    title: '山海遥',
+                    date: '2026-05-20',
+                    cover: 'https://picsum.photos/seed/novel-mountain/400/280',
+                    summary: '一段跨越山海的旅途，一次关于寻找与失去的叙事。',
+                    content: '【待替换】\n\n列车穿过隧道，光明与黑暗交替出现。她坐在靠窗的位置，手里握着一张泛黄的地图，上面标注着一个遥远的小镇。那是祖母生前反复提起的地方，一个她从未去过却无比熟悉的所在。\n\n山海遥，路漫漫。她不知道到达那里之后会发现什么，但她知道，有些答案只有在路上才能找到。窗外的风景不断变换，从平原到丘陵，从城市到荒野，像是在翻阅一本厚重的书……'
+                },
+                {
+                    id: 'novel-003',
+                    category: '小说',
+                    title: '镜中人',
+                    date: '2026-04-12',
+                    cover: 'https://picsum.photos/seed/novel-mirror/400/280',
+                    summary: '每天早晨对镜自照，镜中人似乎越来越不像自己。',
+                    content: '【待替换】\n\n镜子里的那个人，眼角有了细纹，鬓角隐约泛白。他盯着我看，我也盯着他。我们之间隔着一层玻璃，却仿佛隔着漫长的时光。\n\n我伸手触碰镜面，他的指尖与我的指尖重合，冰凉的触感从指尖传来。那一刻，我忽然分不清——究竟是我在看他，还是他在看我？究竟镜子外的是真实的，还是镜子里的才是本来的模样？\n\n这个疑问，从那天起再也没有离开过我……'
+                },
+                {
+                    id: 'novel-004',
+                    category: '小说',
+                    title: '秋日渡口',
+                    date: '2026-03-08',
+                    cover: 'https://picsum.photos/seed/novel-ferry/400/280',
+                    summary: '渡口的老船夫说，他在这条河上摆渡了四十年，见过无数离别与重逢。',
+                    content: '【待替换】\n\n秋天的渡口，芦苇在风中摇曳。老船夫坐在木桩上抽着旱烟，烟雾在夕阳中缓缓升起。\n\n"四十年了，"他说，"这条河还是这条河，可过河的人换了一茬又一茬。"他指了指对岸，"有人去了再也没回来，有人回来了却已经不是当年那个人。"\n\n我登上他的小船，河水轻轻拍打船舷。渡口在身后渐渐变小，对岸的轮廓却越来越清晰。这一刻，我忽然明白了什么叫"此岸"与"彼岸"……'
+                },
+
+                // ===== 散文 (prose) =====
+                {
+                    id: 'prose-001',
+                    category: '散文',
+                    title: '夏日蝉鸣',
+                    date: '2026-07-10',
+                    cover: 'https://picsum.photos/seed/prose-cicada/400/280',
+                    summary: '蝉声如潮的午后，我坐在老屋的廊下，想起了许多遥远的夏天。',
+                    content: '【待替换】\n\n蝉声从四面八方涌来，像一张巨大的网，将整个午后笼罩其中。老屋的廊下阴凉而安静，我坐在藤椅上，看院子里的石榴树在微风中轻轻摆动。\n\n小时候的夏天似乎更长一些。那时候没有空调，只有蒲扇和西瓜，还有祖母摇着扇子讲的古老故事。蝉声也是这样响着，响着响着，一个夏天就过去了。如今蝉声依旧，只是听蝉的人已经变了模样。时光啊，它走得真快……'
+                },
+                {
+                    id: 'prose-002',
+                    category: '散文',
+                    title: '冬夜读书',
+                    date: '2026-01-15',
+                    cover: 'https://picsum.photos/seed/prose-winter/400/280',
+                    summary: '窗外飘着雪，屋内一盏灯，一本书，便是最好的冬夜。',
+                    content: '【待替换】\n\n雪下得很安静，一片一片落在窗台上，慢慢堆积。我把台灯调暗了一些，让光线刚好落在书页上。手边的茶已经凉了，但屋子里很暖和。\n\n在这样的夜晚读书，是一种奢侈的享受。世界被雪隔绝在外，只剩下文字在眼前流淌。偶尔抬头看窗外，雪花在昏黄的路灯下飞舞，像是另外一个世界的来信。这样的时刻，让人感到一种深沉的安宁……'
+                },
+                {
+                    id: 'prose-003',
+                    category: '散文',
+                    title: '春日小记',
+                    date: '2026-03-22',
+                    cover: 'https://picsum.photos/seed/prose-spring/400/280',
+                    summary: '路边的迎春花开了，春天来得悄无声息却又轰轰烈烈。',
+                    content: '【待替换】\n\n转过街角，一丛迎春花猝不及防地撞入眼帘。那种明亮的黄色，像是把所有冬天积攒的阳光都释放了出来。我停下脚步，看了很久。\n\n春天就是这样，它不会提前通知你，只是让一株花、一片新绿悄悄告诉你：我来了。然后你抬起头，发现整条街、整个城市都已经被春天占领。生命的力量，总是这样温柔而坚定……'
+                },
+
+                // ===== 随笔 (essay) =====
+                {
+                    id: 'essay-001',
+                    category: '随笔',
+                    title: '六月末尾',
+                    date: '2026-06-28',
+                    cover: 'https://picsum.photos/seed/essay-june/400/280',
+                    summary: '六月的最后几天，空气中弥漫着离别的味道，也藏着新的开始。',
+                    content: '【待替换】\n\n六月末尾的傍晚，天空呈现出一种奇妙的颜色——介于粉紫与橙黄之间。我走在熟悉的街道上，两旁的梧桐树已经枝繁叶茂。\n\n每到这个时节，总会想起毕业、告别、启程这些词汇。但六月不仅仅是结束，它也是盛夏的开端，是一切蓬勃生长的起点。就像这漫天的晚霞，既是白昼的谢幕，也是夜晚的序章。人生中许多重要的转折，都发生在这样看似平常的黄昏里……'
+                },
+                {
+                    id: 'essay-002',
+                    category: '随笔',
+                    title: '关于时间',
+                    date: '2026-05-05',
+                    cover: 'https://picsum.photos/seed/essay-time/400/280',
+                    summary: '时间是最公平的，也是最无情的。它给每个人同样的二十四小时，却带走了不同的东西。',
+                    content: '【待替换】\n\n坐在窗前发呆，看着秒针一格一格地跳动。时间就这样流走了，无声无息。有时候觉得一天很长，长到可以做很多事情；有时候又觉得一年很短，短到来不及好好告别。\n\n古人说"逝者如斯夫，不舍昼夜"，千年前的话放到今天依然准确。时间从来不会为谁停留，我们能做的，只是在它流过的痕迹里，留下一些值得回忆的东西。也许这就是写作的意义——用文字对抗遗忘……'
+                },
+                {
+                    id: 'essay-003',
+                    category: '随笔',
+                    title: '雨天杂感',
+                    date: '2026-04-18',
+                    cover: 'https://picsum.photos/seed/essay-rain/400/280',
+                    summary: '下雨天最适合胡思乱想，也最适合什么都不想。',
+                    content: '【待替换】\n\n雨打在玻璃上，发出细密的声响。我关掉了音乐，就这样听着雨声发呆。雨天有一种神奇的魔力，它让世界慢下来，也让思绪变得柔软。\n\n记得小时候特别喜欢踩水坑，每踩一下就会溅起小小的水花。现在路过水坑会绕着走，不是怕弄湿鞋子，而是少了那份不管不顾的心情。长大大概就是这样——学会了规避，也失去了许多简单的快乐。不过没关系，至少还有雨天，可以让人名正言顺地慢下来……'
+                },
+
+                // ===== 博客 (blog) =====
+                {
+                    id: 'blog-001',
+                    category: '博客',
+                    title: '搭建这个网站的初衷',
+                    date: '2026-06-15',
+                    cover: 'https://picsum.photos/seed/blog-website/400/280',
+                    summary: '一直想拥有一个属于自己的安静角落，用来存放文字和思绪。',
+                    content: '【待替换】\n\n在这个社交媒体泛滥的时代，我反而越来越渴望一个安静的空间。没有算法推荐，没有点赞数，没有流量焦虑——只是一个单纯的、属于我自己的角落。\n\n这个网站就是这样的存在。它不需要取悦任何人，不需要迎合任何潮流。它只是我的一小片自留地，用来种植文字，收获宁静。希望偶然路过的你，也能在这里找到片刻的安宁。愿我们在喧嚣的世界里，都能保有一方清净之地……'
+                },
+                {
+                    id: 'blog-002',
+                    category: '博客',
+                    title: '推荐几本最近在读的书',
+                    date: '2026-05-30',
+                    cover: 'https://picsum.photos/seed/blog-books/400/280',
+                    summary: '分享几本陪伴我度过这个春天的好书，每一本都值得反复阅读。',
+                    content: '【待替换】\n\n这个春天读了几本很不错的书，想在这里记录一下。\n\n第一本是……（此处内容待替换为真实的读书笔记和推荐）。读书是一件很私人的事情，每个人的感受都不尽相同。但我始终相信，好书就像老朋友，总会在你需要的时候给你慰藉。如果你也有喜欢的书，欢迎在某个角落与我分享。文字的力量，在于它能够跨越时空，把素未谋面的人连接在一起……'
+                },
+                {
+                    id: 'blog-003',
+                    category: '博客',
+                    title: '学会慢下来',
+                    date: '2026-04-25',
+                    cover: 'https://picsum.photos/seed/blog-slow/400/280',
+                    summary: '在这个一切都讲究效率的时代，慢下来反而成了一种需要练习的能力。',
+                    content: '【待替换】\n\n最近在练习"慢下来"。不是懒惰，而是有意识地放慢节奏——慢慢吃饭，慢慢走路，慢慢读一本书。\n\n刚开始很不习惯，总觉得有什么事情在等着我去完成。但坚持了一段时间后，发现效率并没有降低，反而因为更专注而提高了。更重要的是，我开始重新注意到生活中那些被忽略的细节：早晨咖啡的香气、午后阳光的角度、傍晚窗外的鸟鸣。这些细小的事物，构成了生活真正的质感……'
+                },
+
+                // ===== 照片 (photo) =====
+                {
+                    id: 'photo-001',
+                    category: '照片',
+                    title: '雨后',
+                    date: '2026-07-08',
+                    cover: 'https://picsum.photos/seed/photo-rain/400/280',
+                    summary: '一场骤雨过后，城市的倒影在水中显得格外温柔。',
+                    content: '【待替换】\n\n（这组照片拍摄于七月的一场骤雨之后。）\n\n雨后的街道积着浅浅的水，倒映着天空和建筑。平日里熟悉的城市，在水影中变得陌生而美丽。我用相机捕捉了几个瞬间：一个孩子跳过水坑的刹那、一对老人在湿漉漉的长椅上并肩坐着、一只猫在屋檐下甩干身上的水珠。\n\n这些平常的场景，在雨水的洗礼后都带上了一层柔和的光晕。也许生活就是这样——偶尔需要一场雨，才能看清平日里忽略的美好……'
+                },
+                {
+                    id: 'photo-002',
+                    category: '照片',
+                    title: '故乡的田野',
+                    date: '2026-04-05',
+                    cover: 'https://picsum.photos/seed/photo-field/400/280',
+                    summary: '清明回乡，用镜头记录下了记忆中那片金色的油菜花田。',
+                    content: '【待替换】\n\n（清明时节回到故乡，田野里的油菜花开得正盛。）\n\n站在田埂上放眼望去，满眼都是金黄色，一直延伸到远处的山脚下。小时候觉得这片田野好大，大到可以装下整个童年。现在再看，它其实并不大，但它承载的记忆却比任何地方都要厚重。\n\n我用相机拍下了很多照片：蜜蜂在花间忙碌、风拂过花田掀起波浪、夕阳把一切都染成橘色。这些画面，是我送给自己的关于故乡的礼物……'
+                },
+                {
+                    id: 'photo-003',
+                    category: '照片',
+                    title: '城市剪影',
+                    date: '2026-03-15',
+                    cover: 'https://picsum.photos/seed/photo-skyline/400/280',
+                    summary: '黄昏时分，城市的天际线在暮色中勾勒出独特的轮廓。',
+                    content: '【待替换】\n\n（这组城市剪影拍摄于不同的黄昏。）\n\n我偏爱黄昏时分的城市。那时天还没有完全黑，灯光却已经亮起，建筑变成了深色的剪影，天空则是渐变的画布。每一扇亮着灯的窗户后面，都有一个故事在上演。\n\n摄影的奇妙之处在于，它能把流动的时间凝固成一个瞬间。而当我回看这些照片时，那些瞬间又重新流动起来，带着当时的温度和情绪……'
+                },
+
+                // ===== 情绪 (mood) =====
+                {
+                    id: 'mood-001',
+                    category: '情绪',
+                    title: '情绪日记·其三',
+                    date: '2026-06-20',
+                    cover: 'https://picsum.photos/seed/mood-diary3/400/280',
+                    summary: '最近的情绪像天气一样多变，时而晴朗，时而阴雨。记录下来，也是一种自我疗愈。',
+                    content: '【待替换】\n\n今天醒来的时候，莫名感到一阵低落。窗外阳光很好，但心里却像蒙了一层雾。\n\n我没有强迫自己振作起来，而是允许自己就这样低沉着。泡了一杯热茶，坐在窗前发呆。慢慢地，那片雾似乎薄了一些。我发现，当我不再对抗情绪，而是安静地观察它时，它反而没有那么沉重了。\n\n也许情绪不需要被"解决"，它只需要被看见、被接纳。就像天气一样，阴天过后，阳光总会回来的……'
+                },
+                {
+                    id: 'mood-002',
+                    category: '情绪',
+                    title: '小确幸清单',
+                    date: '2026-05-12',
+                    cover: 'https://picsum.photos/seed/mood-happy/400/280',
+                    summary: '列出那些让我感到微小而确定的幸福瞬间。',
+                    content: '【待替换】\n\n今天想记录一些让我感到幸福的小事：\n\n1. 早晨第一杯咖啡的香气。\n2. 路边一只主动蹭过来的流浪猫。\n3. 收到一封来自老友的手写信。\n4. 傍晚天空出现了一道淡淡的彩虹。\n5. 睡前读到了一句打动我的诗。\n\n这些瞬间都很微小，但把它们收集起来，就像在口袋里装满了糖果。在需要的时候拿出一颗，就能甜很久。我想这就是所谓的"小确幸"——不需要多么宏大的理由，只是生活中那些不经意的温柔……'
+                },
+                {
+                    id: 'mood-003',
+                    category: '情绪',
+                    title: '给未来的自己',
+                    date: '2026-02-14',
+                    cover: 'https://picsum.photos/seed/mood-future/400/280',
+                    summary: '写一封短信给一年后的自己，不知道那时候再看会是什么心情。',
+                    content: '【待替换】\n\n亲爱的未来的我：\n\n当你读到这封信的时候，已经过去一年了。现在的你还好吗？那些让你焦虑的事情，是不是已经解决了？那些让你开心的事情，还记得吗？\n\n我想对你说，无论这一年发生了什么，都请记得：你已经做得很好了。不必对自己太苛刻，也不必总是和别人比较。你就是你，独一无二的你。\n\n希望一年后的你，依然保持着对世界的好奇心，依然愿意用文字记录生活。我们在时间里相遇，又在时间里告别。愿你一切安好……'
+                },
+                {
+                    id: 'mood-004',
+                    category: '情绪',
+                    title: '秋夜独白',
+                    date: '2025-11-08',
+                    cover: 'https://picsum.photos/seed/mood-autumn/400/280',
+                    summary: '一个普通的秋夜，一些普通的思绪。',
+                    content: '【待替换】\n\n秋天的夜晚总是格外安静。窗外的风声像一首低沉的曲子，断断续续地演奏着。\n\n我喜欢这样的夜晚，可以什么都不做，只是静静地坐着，让思绪自由飘荡。有时候会想起一些很久以前的事情，有时候会想象一些还未发生的事情。这些念头来了又走，像窗外的落叶一样。\n\n也许孤独并不是一件坏事，它让人有机会与自己对话。在这个喧闹的世界里，能够安静地陪伴自己，也是一种珍贵的能力……'
+                }
+            ];
+
+            // ==================== 分类配置 ====================
+            const CATEGORY_CONFIG = {
+                '小说': { icon: '📖', accent: '#c97d60', bg: '#fdf6f3' },
+                '散文': { icon: '✍️', accent: '#b8936e', bg: '#fdfaf5' },
+                '随笔': { icon: '💭', accent: '#7a9a7e', bg: '#f5faf7' },
+                '博客': { icon: '📝', accent: '#6b8a9e', bg: '#f5f8fb' },
+                '照片': { icon: '📷', accent: '#8b7aa0', bg: '#f8f6fb' },
+                '情绪': { icon: '🌸', accent: '#c47d8b', bg: '#fdf5f8' },
+            };
+
+            const CATEGORY_ORDER = ['小说', '散文', '随笔', '博客', '照片', '情绪'];
+
+            // ==================== 工具函数 ====================
+            function isWithin30Days(dateStr) {
+                const now = new Date('2026-07-14'); // 以当前日期为基准
+                const target = new Date(dateStr);
+                const diffMs = now - target;
+                const diffDays = diffMs / (1000 * 60 * 60 * 24);
+                return diffDays >= 0 && diffDays <= 30;
+            }
+
+            function getRecentWorks() {
+                return WORKS_DATA.filter(w => isWithin30Days(w.date))
+                    .sort((a, b) => new Date(b.date) - new Date(a.date));
+            }
+
+            function getWorksByCategory(category) {
+                return WORKS_DATA.filter(w => w.category === category)
+                    .sort((a, b) => new Date(b.date) - new Date(a.date));
+            }
+
+            function getWorkById(id) {
+                return WORKS_DATA.find(w => w.id === id);
+            }
+
+            function formatDate(dateStr) {
+                const d = new Date(dateStr);
+                const year = d.getFullYear();
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                return `${year}年${month}月${day}日`;
+            }
+
+            function formatDateShort(dateStr) {
+                const d = new Date(dateStr);
+                return `${d.getMonth() + 1}月${d.getDate()}日`;
+            }
+
+            // ==================== DOM引用 ====================
+            const mainContent = document.getElementById('mainContent');
+            const sidebarRecentList = document.getElementById('sidebarRecentList');
+            const mobileRecentList = document.getElementById('mobileRecentList');
+            const mobileRecentPanel = document.getElementById('mobileRecentPanel');
+            const mobileRecentOverlay = document.getElementById('mobileRecentOverlay');
+            const mtRecentBtn = document.getElementById('mtRecentBtn');
+            const sidebar = document.getElementById('sidebar');
+            const mobileTopbar = document.getElementById('mobileTopbar');
+
+            // ==================== 渲染最近发布 ====================
+            function renderRecentWorks() {
+                const recentWorks = getRecentWorks();
+                const renderList = (container, isMobile = false) => {
+                    if (!container) return;
+                    if (recentWorks.length === 0) {
+                        container.innerHTML =
+                            '<li class="sidebar-recent-empty" style="list-style:none;">近30天内暂无发布</li>';
+                        return;
+                    }
+                    const items = recentWorks.map(w => {
+                        if (isMobile) {
+                            return `
+                            <div class="mrp-item" data-work-id="${w.id}" onclick="window._navigateToDetail('${w.id}')">
+                                ${w.title}
+                                <span class="mrp-date">${formatDateShort(w.date)} · ${w.category}</span>
+                            </div>`;
+                        }
+                        return `
+                        <li class="sidebar-recent-item" data-work-id="${w.id}" onclick="window._navigateToDetail('${w.id}')">
+                            ${w.title}
+                            <span class="recent-date">${formatDateShort(w.date)} · ${w.category}</span>
+                        </li>`;
+                    }).join('');
+                    container.innerHTML = items;
+                };
+
+                renderList(sidebarRecentList, false);
+                renderList(mobileRecentList, true);
+            }
+
+            // 暴露到全局以便onclick使用
+            window._navigateToDetail = function(workId) {
+                navigateToDetail(workId);
+                // 关闭移动端面板
+                closeMobileRecentPanel();
+            };
+
+            // ==================== 移动端最近发布面板 ====================
+            function openMobileRecentPanel() {
+                mobileRecentPanel.classList.add('open');
+                mobileRecentOverlay.classList.add('open');
+                mtRecentBtn.textContent = '最新 ▴';
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeMobileRecentPanel() {
+                mobileRecentPanel.classList.remove('open');
+                mobileRecentOverlay.classList.remove('open');
+                mtRecentBtn.textContent = '最新 ▾';
+                document.body.style.overflow = '';
+            }
+
+            mtRecentBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (mobileRecentPanel.classList.contains('open')) {
+                    closeMobileRecentPanel();
+                } else {
+                    openMobileRecentPanel();
+                }
+            });
+
+            mobileRecentOverlay.addEventListener('click', () => {
+                closeMobileRecentPanel();
+            });
+
+            // 点击面板内的项目后关闭
+            mobileRecentPanel.addEventListener('click', (e) => {
+                if (e.target.closest('.mrp-item')) {
+                    setTimeout(closeMobileRecentPanel, 150);
+                }
+            });
+
+            // ==================== 路由与视图切换 ====================
+            function parseHash() {
+                const hash = window.location.hash.replace('#', '') || '/';
+                const parts = hash.split('/').filter(Boolean);
+
+                if (parts.length === 0 || (parts.length === 1 && parts[0] === '')) {
+                    return { view: 'home', category: null, workId: null };
+                }
+                if (parts[0] === 'category' && parts.length >= 2) {
+                    return { view: 'list', category: decodeURIComponent(parts[1]), workId: null };
+                }
+                if (parts[0] === 'detail' && parts.length >= 2) {
+                    return { view: 'detail', category: null, workId: decodeURIComponent(parts[1]) };
+                }
+                return { view: 'home', category: null, workId: null };
+            }
+
+            function navigateToHome() {
+                window.location.hash = '#/';
+            }
+
+            function navigateToCategory(category) {
+                window.location.hash = '#/category/' + encodeURIComponent(category);
+            }
+
+            function navigateToDetail(workId) {
+                window.location.hash = '#/detail/' + encodeURIComponent(workId);
+            }
+
+            function getCurrentRoute() {
+                return parseHash();
+            }
+
+            // ==================== 渲染函数 ====================
+            function renderHome() {
+                const cards = CATEGORY_ORDER.map(cat => {
+                    const config = CATEGORY_CONFIG[cat];
+                    const count = getWorksByCategory(cat).length;
+                    return `
+                    <div class="category-card"
+                    style="--cat-accent: ${config.accent};"
+                    onclick="window._navigateToCategory('${cat}')"
+                    role="button"
+                    tabindex="0"
+                    aria-label="进入${cat}分类">
+                    <span class="category-icon">${config.icon}</span>
+                    <div class="category-label">${cat}</div>
+                    <div class="category-count">${count} 篇作品</div>
+                </div>`;
+            }).join('');
+
+            mainContent.innerHTML = `
+            <div style="max-width:820px; margin:0 auto;">
+            <div style="margin-bottom:32px;">
+            <h2 style="font-size:1.5rem;font-weight:600;color:var(--text-primary);letter-spacing:0.05em;margin-bottom:6px;">探索</h2>
+            <p style="color:var(--text-muted);font-size:0.9rem;">选择一个分类，开始阅读</p>
+        </div>
+        <div class="category-grid">${cards}</div>
+    </div>
+    `;
+    // 恢复主背景色
+    mainContent.style.background = 'var(--main-bg)';
+}
+
+window._navigateToCategory = function(category) {
+    navigateToCategory(category);
+};
+
+function renderCategoryList(category) {
+    const works = getWorksByCategory(category);
+    const config = CATEGORY_CONFIG[category];
+    // 设置分类背景色
+    mainContent.style.background = config.bg;
+
+    let listHTML = '';
+    if (works.length === 0) {
+        listHTML = `
+        <div style="text-align:center;padding:60px 20px;color:var(--text-muted);">
+        <p style="font-size:1.1rem;">该分类下暂无作品</p>
+        <p style="font-size:0.85rem;margin-top:8px;">敬请期待</p>
+    </div>`;
+} else {
+    listHTML = works.map(w => `
+        <div class="work-card" onclick="window._navigateToDetail('${w.id}')" role="button" tabindex="0">
+        <img class="work-card-cover" src="${w.cover}" alt="${w.title}封面" loading="lazy" onerror="this.style.background='#e0d8cc';">
+        <div class="work-card-info">
+        <div class="work-card-title">${w.title}</div>
+        <div class="work-card-meta">${formatDate(w.date)}</div>
+        <div class="work-card-summary">${w.summary}</div>
+    </div>
+</div>
+`).join('');
+}
+
+mainContent.innerHTML = `
+<div style="max-width:780px; margin:0 auto;">
+<div class="breadcrumb">
+<span onclick="window._navigateToHome()">首页</span>
+<span class="sep">›</span>
+<span class="current">${category}</span>
+</div>
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:22px;">
+<span style="font-size:2rem;">${config.icon}</span>
+<h2 style="font-size:1.5rem;font-weight:600;color:var(--text-primary);letter-spacing:0.05em;">${category}</h2>
+<span style="color:var(--text-muted);font-size:0.85rem;">共 ${works.length} 篇</span>
+</div>
+<div class="work-list">${listHTML}</div>
+</div>
+`;
+}
+
+window._navigateToHome = function() {
+    navigateToHome();
+};
+
+function renderDetail(workId) {
+    const work = getWorkById(workId);
+    if (!work) {
+        mainContent.innerHTML = `
+        <div style="text-align:center;padding:80px 20px;">
+        <p style="font-size:1.2rem;color:var(--text-muted);">作品未找到</p>
+        <button class="back-btn" onclick="window._navigateToHome()">
+        <span class="arrow">←</span> 返回首页
+    </button>
+</div>`;
+mainContent.style.background = 'var(--main-bg)';
+return;
+}
+
+const config = CATEGORY_CONFIG[work.category];
+mainContent.style.background = config.bg;
+
+const contentParagraphs = work.content
+.split('\n\n')
+.filter(p => p.trim())
+.map(p => `<p>${p.trim()}</p>`)
+.join('\n');
+
+mainContent.innerHTML = `
+<div class="detail-page">
+<div class="breadcrumb">
+<span onclick="window._navigateToHome()">首页</span>
+<span class="sep">›</span>
+<span onclick="window._navigateToCategory('${work.category}')">${work.category}</span>
+<span class="sep">›</span>
+<span class="current">${work.title}</span>
+</div>
+<button class="back-btn" onclick="window._navigateToCategory('${work.category}')">
+<span class="arrow">←</span> 返回${work.category}列表
+</button>
+<img class="detail-cover" src="${work.cover}" alt="${work.title}封面" loading="eager" onerror="this.style.background='#e0d8cc';this.style.minHeight='200px';">
+<h1 class="detail-title">${work.title}</h1>
+<div class="detail-meta">${formatDate(work.date)} · ${work.category}</div>
+<div class="detail-body">${contentParagraphs}</div>
+<div style="margin-top:36px;padding-top:20px;border-top:1px solid var(--border-subtle);">
+<button class="back-btn" onclick="window._navigateToCategory('${work.category}')">
+<span class="arrow">←</span> 返回${work.category}列表
+</button>
+</div>
+</div>
+`;
+}
+
+window._navigateToCategory = function(category) {
+    navigateToCategory(category);
+};
+
+// ==================== 路由变化处理 ====================
+function handleRouteChange() {
+    const route = getCurrentRoute();
+    switch (route.view) {
+        case 'home':
+        renderHome();
+        break;
+        case 'list':
+        if (route.category && CATEGORY_CONFIG[route.category]) {
+            renderCategoryList(route.category);
+        } else {
+            navigateToHome();
+        }
+        break;
+        case 'detail':
+        if (route.workId) {
+            renderDetail(route.workId);
+        } else {
+            navigateToHome();
+        }
+        break;
+        default:
+        navigateToHome();
+    }
+    // 滚动到顶部
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // 在移动端滚动main-content到顶部
+    mainContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+window.addEventListener('hashchange', handleRouteChange);
+
+// ==================== 初始化 ====================
+function init() {
+    renderRecentWorks();
+    // 如果没有hash或hash无效，设置默认hash
+    const route = getCurrentRoute();
+    if (route.view === 'home' && !window.location.hash) {
+        // 静默设置hash
+        window.location.hash = '#/';
+    }
+    handleRouteChange();
+}
+
+// ==================== 移动端点击主内容时关闭面板 ====================
+mainContent.addEventListener('click', (e) => {
+    if (mobileRecentPanel.classList.contains('open')) {
+        // 如果点击的不是面板内的元素
+        if (!mobileRecentPanel.contains(e.target) && e.target !== mtRecentBtn) {
+            closeMobileRecentPanel();
+        }
+    }
+});
+
+// ==================== 键盘导航支持 ====================
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        if (mobileRecentPanel.classList.contains('open')) {
+            closeMobileRecentPanel();
+        }
+    }
+});
+
+// ==================== 启动 ====================
+init();
+
+// 暴露必要的函数到全局作用域
+window._navigateToHome = navigateToHome;
+window._navigateToCategory = navigateToCategory;
+window._navigateToDetail = navigateToDetail;
+})();
+</script>
+</body>
+</html>
