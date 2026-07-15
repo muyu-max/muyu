@@ -2,1306 +2,966 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>木千余 - 个人网站</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>木千余 · 记录我一生的故事</title>
     <style>
+        /* ===== 全局样式 ===== */
         :root {
-            --sidebar-bg: #f5ede3;
-            --main-bg: #fefdfb;
-            --text-primary: #3d3630;
-            --text-secondary: #6b5f55;
-            --text-muted: #9a8d82;
-            --border-subtle: #e8e0d5;
-            --accent-novel: #c97d60;
-            --accent-prose: #b8936e;
-            --accent-essay: #7a9a7e;
-            --accent-blog: #6b8a9e;
-            --accent-photo: #8b7aa0;
-            --accent-mood: #c47d8b;
-            --card-shadow: 0 1px 3px rgba(60, 40, 20, 0.06), 0 1px 8px rgba(60, 40, 20, 0.04);
-            --card-shadow-hover: 0 3px 12px rgba(60, 40, 20, 0.10), 0 2px 20px rgba(60, 40, 20, 0.06);
-            --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --sidebar-width: 270px;
-            --topbar-height: 56px;
-            --radius-sm: 8px;
-            --radius-md: 14px;
-            --radius-lg: 20px;
-            --radius-full: 50%;
+            --bg: #F9F9F7;
+            --text: #2C2C2C;
+            --text-secondary: #666666;
+            --accent: #E67E22;
+            --accent-hover: #c65d1a;
+            --white: #ffffff;
+            --overlay-light: rgba(255,255,255,0.45);
+            --overlay-dark: rgba(0,0,0,0.3);
+            --overlay-strong: rgba(0,0,0,0.55);
+            --glass-bg: rgba(255,255,255,0.22);
+            --shadow-sm: 0 8px 24px rgba(0,0,0,0.04);
+            --shadow-md: 0 16px 40px rgba(0,0,0,0.08);
+            --shadow-lg: 0 24px 56px rgba(0,0,0,0.12);
+            --radius: 18px;
+            --radius-sm: 12px;
+            --transition: 0.35s cubic-bezier(0.2,0,0,1.0);
+            --nav-height: 64px;
+            --font-heading: 'PingFang SC','Microsoft YaHei','Hiragino Sans GB',sans-serif;
+            --font-body: 'PingFang SC','Microsoft YaHei','Hiragino Sans GB',sans-serif;
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        * { box-sizing: border-box; margin:0; padding:0; }
+        html { scroll-behavior: smooth; font-size:16px; -webkit-font-smoothing: antialiased; }
+        body { font-family: var(--font-body); background: var(--bg); color: var(--text); line-height:1.6; overflow-x:hidden; }
+        body.overlay-open { overflow:hidden; padding-right: var(--scrollbar-width,0px); }
+        body.lightbox-open { overflow:hidden; }
+        .nav {
+            position:fixed; top:0; left:0; width:100%; height:var(--nav-height);
+            background:rgba(249,249,247,0.82); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
+            border-bottom:1px solid rgba(0,0,0,0.04);
+            display:flex; align-items:center; justify-content:space-between; padding:0 40px; z-index:1000;
+            transition: background 0.3s, box-shadow 0.3s;
         }
-
-        html {
-            scroll-behavior: smooth;
-            font-size: 16px;
+        .nav.scrolled { background:rgba(249,249,247,0.95); box-shadow:var(--shadow-sm); }
+        .nav-logo { font-family:var(--font-heading); font-size:1.45rem; font-weight:600; letter-spacing:5px; color:var(--text); text-decoration:none; white-space:nowrap; transition:color 0.2s; }
+        .nav-logo:hover { color:var(--accent); }
+        .nav-links { display:flex; gap:20px; list-style:none; flex-wrap:wrap; }
+        .nav-links a { font-size:0.85rem; letter-spacing:1.5px; color:var(--text-secondary); text-decoration:none; position:relative; padding:6px 0; transition:color 0.2s; }
+        .nav-links a::after { content:''; position:absolute; bottom:0; left:50%; width:100%; height:1.5px; background:var(--accent); transform:translateX(-50%) scaleX(0); transition:transform 0.25s ease; }
+        .nav-links a:hover, .nav-links a.active { color:var(--accent); }
+        .nav-links a:hover::after, .nav-links a.active::after { transform:translateX(-50%) scaleX(1); }
+        .nav-hamburger { display:none; flex-direction:column; gap:5px; background:none; border:none; cursor:pointer; padding:8px; z-index:1001; }
+        .nav-hamburger span { display:block; width:24px; height:2px; background:var(--text); border-radius:2px; transition:0.25s; }
+        .nav-hamburger.active span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
+        .nav-hamburger.active span:nth-child(2) { opacity:0; }
+        .nav-hamburger.active span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
+        .nav-mobile { display:none; position:fixed; top:var(--nav-height); left:0; width:100%; background:rgba(249,249,247,0.98); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); padding:24px 36px; flex-direction:column; gap:20px; list-style:none; box-shadow:var(--shadow-md); transform:translateY(-12px); opacity:0; pointer-events:none; transition:0.3s; z-index:999; }
+        .nav-mobile.active { transform:translateY(0); opacity:1; pointer-events:auto; }
+        .nav-mobile a { font-size:1.1rem; letter-spacing:2px; color:var(--text); text-decoration:none; padding:10px 0; border-bottom:1px solid rgba(0,0,0,0.04); }
+        .hero {
+            height:100vh; display:flex; align-items:center; justify-content:center;
+            background:url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=1920&q=80') center/cover no-repeat;
+            background-attachment:fixed; position:relative;
         }
-
-        body {
-            font-family: "PingFang SC", "Noto Serif SC", "Source Han Serif SC", "STSong", "Songti SC", "Hiragino Mincho Pro", "Georgia", "Times New Roman", serif;
-            background: var(--main-bg);
-            color: var(--text-primary);
-            line-height: 1.7;
-            min-height: 100vh;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            letter-spacing: 0.02em;
-        }
-
-        /* ========== 整体布局容器 ========== */
-        .app-container {
-            display: flex;
-            min-height: 100vh;
-            position: relative;
-        }
-
-        /* ========== 左侧边栏 (桌面端sticky) ========== */
-        .sidebar {
-            width: var(--sidebar-width);
-            min-width: var(--sidebar-width);
-            background: var(--sidebar-bg);
-            padding: 40px 28px 32px;
-            position: sticky;
-            top: 0;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            overflow-y: auto;
-            z-index: 10;
-            border-right: 1px solid var(--border-subtle);
-            transition: var(--transition-smooth);
-        }
-
-        .sidebar::-webkit-scrollbar {
-            width: 4px;
-        }
-        .sidebar::-webkit-scrollbar-thumb {
-            background: #d5cbc0;
-            border-radius: 4px;
-        }
-        .sidebar::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .sidebar-avatar-wrap {
-            flex-shrink: 0;
-            margin-bottom: 16px;
-        }
-        .sidebar-avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: var(--radius-full);
-            object-fit: cover;
-            border: 3px solid #fff;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-            transition: var(--transition-smooth);
-            background: #e8ddd0;
-        }
-        .sidebar-avatar:hover {
-            transform: scale(1.04);
-            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.13);
-        }
-        .sidebar-name {
-            font-size: 1.35rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            letter-spacing: 0.06em;
-            margin-bottom: 28px;
-            flex-shrink: 0;
+        .hero::before { content:''; position:absolute; inset:0; background:rgba(255,255,255,0.5); z-index:1; backdrop-filter:blur(1px); }
+        .hero-content { position:relative; z-index:2; text-align:center; padding:0 24px; }
+        .hero-title { font-family:var(--font-heading); font-size:clamp(2.6rem,6vw,4.2rem); font-weight:300; letter-spacing:7px; color:#1e1e1e; margin-bottom:14px; text-shadow:0 2px 12px rgba(255,255,255,0.8); }
+        .hero-sub { font-size:1.15rem; letter-spacing:2.5px; color:#3a3a3a; text-shadow:0 1px 8px rgba(255,255,255,0.7); }
+        .scroll-indicator { position:absolute; bottom:32px; left:50%; transform:translateX(-50%); z-index:2; text-align:center; cursor:pointer; color:#4a4a4a; }
+        .scroll-indicator span { display:block; font-size:0.7rem; letter-spacing:2px; margin-bottom:6px; }
+        .scroll-arrow { width:24px; height:24px; border-right:2px solid #4a4a4a; border-bottom:2px solid #4a4a4a; transform:rotate(45deg); margin:0 auto; animation:bounce 2s infinite; }
+        @keyframes bounce { 0%,100% { transform:rotate(45deg) translateY(0); opacity:0.5; } 50% { transform:rotate(45deg) translateY(8px); opacity:1; } }
+        .section-block { min-height:100vh; display:flex; align-items:center; justify-content:center; background-size:cover; background-position:center; position:relative; scroll-margin-top:var(--nav-height); }
+        .section-block::before { content:''; position:absolute; inset:0; background:var(--overlay-dark); transition:0.4s; }
+        .section-block:hover::before { background:var(--overlay-strong); }
+        .block-inner { position:relative; z-index:2; background:var(--glass-bg); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border-radius:var(--radius); border:1px solid rgba(255,255,255,0.35); padding:48px 44px; text-align:center; max-width:500px; box-shadow:var(--shadow-md); transition:transform 0.3s, box-shadow 0.3s; }
+        .section-block:hover .block-inner { transform:translateY(-6px); box-shadow:var(--shadow-lg); }
+        .block-inner h2 { font-family:var(--font-heading); font-size:2.3rem; font-weight:400; letter-spacing:4px; color:#fff; margin-bottom:12px; text-shadow:0 2px 10px rgba(0,0,0,0.25); }
+        .block-inner p { color:rgba(255,255,255,0.9); margin-bottom:32px; letter-spacing:1.5px; font-size:1rem; }
+        .btn { display:inline-block; padding:12px 38px; border-radius:40px; background:var(--accent); color:white; letter-spacing:2px; font-size:0.95rem; border:none; cursor:pointer; text-decoration:none; transition:0.25s; box-shadow:0 8px 20px rgba(230,126,34,0.3); font-weight:500; -webkit-tap-highlight-color:transparent; }
+        .btn:hover { background:var(--accent-hover); transform:translateY(-2px); box-shadow:0 12px 28px rgba(230,126,34,0.4); }
+        .btn-outline { background:transparent; border:1.5px solid white; box-shadow:none; }
+        .btn-outline:hover { background:rgba(255,255,255,0.18); }
+        .overlay { position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:2000; display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity 0.35s; }
+        .overlay.active { opacity:1; pointer-events:auto; }
+        .overlay-panel { width:92%; max-width:800px; max-height:86vh; background:var(--bg); border-radius:var(--radius); overflow:hidden; display:flex; flex-direction:column; box-shadow:var(--shadow-lg); transform:translateY(20px) scale(0.97); transition:transform 0.4s cubic-bezier(0.2,0.9,0.4,1); }
+        .overlay.active .overlay-panel { transform:translateY(0) scale(1); }
+        .overlay-header { display:flex; justify-content:space-between; align-items:center; padding:18px 28px; border-bottom:1px solid rgba(0,0,0,0.06); background:rgba(249,249,247,0.9); backdrop-filter:blur(12px); flex-shrink:0; }
+        .overlay-header h3 { font-weight:500; letter-spacing:2px; font-size:1.2rem; }
+        .overlay-close { background:none; border:none; font-size:1.6rem; cursor:pointer; color:var(--text-secondary); width:36px; height:36px; display:flex; align-items:center; justify-content:center; border-radius:50%; transition:0.2s; -webkit-tap-highlight-color:transparent; }
+        .overlay-close:hover { background:rgba(0,0,0,0.05); color:var(--text); }
+        .overlay-body { flex:1; overflow-y:auto; padding:28px; -webkit-overflow-scrolling:touch; }
+        .overlay-body::-webkit-scrollbar { width:5px; }
+        .overlay-body::-webkit-scrollbar-track { background:transparent; }
+        .overlay-body::-webkit-scrollbar-thumb { background:rgba(0,0,0,0.12); border-radius:10px; }
+        .list-view, .detail-view { transition:opacity 0.25s; }
+        .detail-view { display:none; }
+        .detail-view.active { display:block; }
+        .list-view.hidden { display:none; }
+        .back-btn { background:none; border:none; color:var(--accent); font-size:0.9rem; letter-spacing:1px; cursor:pointer; margin-bottom:20px; display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border-radius:24px; transition:0.2s; -webkit-tap-highlight-color:transparent; }
+        .back-btn:hover { background:rgba(0,0,0,0.03); }
+        .back-btn::before { content:'←'; font-size:1rem; }
+        .grid-cards { display:grid; grid-template-columns:repeat(auto-fill, minmax(180px,1fr)); gap:20px; }
+        .card { background:white; border-radius:var(--radius-sm); overflow:hidden; box-shadow:var(--shadow-sm); cursor:pointer; transition:0.25s; -webkit-tap-highlight-color:transparent; }
+        .card:hover { transform:translateY(-5px); box-shadow:var(--shadow-md); }
+        .card img { width:100%; height:160px; object-fit:cover; display:block; }
+        .card-text { padding:16px; }
+        .card-text h4 { font-size:1rem; margin-bottom:4px; font-weight:550; color:var(--text); }
+        .card-text p { font-size:0.8rem; color:var(--text-secondary); }
+        .book-detail-header { text-align:center; margin-bottom:24px; }
+        .book-detail-header .book-cover { width:140px; height:190px; object-fit:cover; border-radius:var(--radius-sm); box-shadow:var(--shadow-md); margin-bottom:16px; }
+        .book-detail-header h2 { font-family:var(--font-heading); font-size:1.6rem; font-weight:500; letter-spacing:3px; margin-bottom:6px; color:var(--text); }
+        .book-detail-header .book-author { font-size:0.85rem; color:var(--text-secondary); letter-spacing:1.5px; }
+        .book-synopsis { background:#ffffff; padding:22px 24px; border-radius:var(--radius-sm); margin-bottom:28px; box-shadow:var(--shadow-sm); border-left:4px solid var(--accent); line-height:1.8; }
+        .book-synopsis h4 { font-size:0.85rem; text-transform:uppercase; letter-spacing:3px; color:var(--accent); margin-bottom:10px; font-weight:500; }
+        .book-synopsis p { color:#444; font-size:0.95rem; }
+        .chapter-section-title { font-size:0.85rem; text-transform:uppercase; letter-spacing:3px; color:var(--text-secondary); margin-bottom:14px; font-weight:500; }
+        .chapter-list { display:flex; flex-direction:column; gap:10px; }
+        .chapter-item { background:white; padding:16px 22px; border-radius:var(--radius-sm); box-shadow:var(--shadow-sm); cursor:pointer; transition:0.2s; display:flex; align-items:center; gap:14px; -webkit-tap-highlight-color:transparent; }
+        .chapter-item:hover { transform:translateX(4px); box-shadow:var(--shadow-md); background:#fdfaf6; }
+        .chapter-num { width:42px; height:42px; border-radius:50%; background:var(--accent); color:white; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:0.9rem; flex-shrink:0; }
+        .chapter-info h4 { font-size:1rem; font-weight:500; letter-spacing:1px; color:var(--text); margin-bottom:2px; }
+        .chapter-info p { font-size:0.8rem; color:var(--text-secondary); }
+        .article-full { font-family:var(--font-body); line-height:2; color:#2a2a2a; padding:10px 0; }
+        .article-full h2 { font-size:2rem; margin-bottom:24px; letter-spacing:2px; font-weight:500; color:var(--text); }
+        .article-full h3 { font-size:1.3rem; margin:28px 0 14px; color:var(--text); letter-spacing:1px; }
+        .article-full p { margin-bottom:18px; font-size:1rem; color:#3a3a3a; text-indent:2em; }
+        .article-full .divider { text-align:center; color:var(--accent); letter-spacing:4px; margin:28px 0; font-size:0.9rem; }
+        .full-text-guide {
+            background: #fef3e2;
+            border-left: 4px solid var(--accent);
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin: 20px 0 10px;
             text-align: center;
-        }
-        .sidebar-recent-title {
-            font-size: 0.8rem;
-            font-weight: 500;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: 14px;
-            flex-shrink: 0;
-            text-align: center;
-            border-bottom: 1px solid var(--border-subtle);
-            padding-bottom: 10px;
-            width: 100%;
-        }
-        .sidebar-recent-list {
-            list-style: none;
-            width: 100%;
-            flex: 1;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-        .sidebar-recent-item {
-            cursor: pointer;
-            padding: 9px 12px;
-            border-radius: var(--radius-sm);
-            transition: var(--transition-smooth);
-            font-size: 0.88rem;
-            color: var(--text-secondary);
-            line-height: 1.4;
-            border-left: 2px solid transparent;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .sidebar-recent-item:hover {
-            background: #ede3d6;
-            color: var(--text-primary);
-            border-left-color: #c9a87c;
-            padding-left: 16px;
-        }
-        .sidebar-recent-item .recent-date {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            display: block;
-            margin-top: 1px;
-        }
-        .sidebar-recent-empty {
-            font-size: 0.82rem;
-            color: var(--text-muted);
-            text-align: center;
-            padding: 20px 0;
-            font-style: italic;
-        }
-
-        /* ========== 移动端顶部条 ========== */
-        .mobile-topbar {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: var(--topbar-height);
-            background: var(--sidebar-bg);
-            z-index: 100;
-            align-items: center;
-            padding: 0 16px;
-            border-bottom: 1px solid var(--border-subtle);
-            gap: 12px;
-        }
-        .mobile-topbar .mt-avatar {
-            width: 38px;
-            height: 38px;
-            border-radius: var(--radius-full);
-            object-fit: cover;
-            flex-shrink: 0;
-            border: 2px solid #fff;
-            background: #e8ddd0;
-        }
-        .mobile-topbar .mt-name {
-            font-weight: 600;
             font-size: 1rem;
-            color: var(--text-primary);
-            flex: 1;
-            letter-spacing: 0.04em;
+            color: #7a5a2a;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         }
-        .mobile-topbar .mt-recent-btn {
-            font-size: 0.78rem;
-            color: var(--text-secondary);
-            background: #ede3d6;
-            border: none;
-            padding: 7px 14px;
-            border-radius: 20px;
-            cursor: pointer;
-            letter-spacing: 0.04em;
-            transition: var(--transition-smooth);
-            white-space: nowrap;
-            font-family: inherit;
-        }
-        .mobile-topbar .mt-recent-btn:active {
-            background: #dccdb8;
-            transform: scale(0.96);
-        }
-        .mobile-recent-panel {
-            display: none;
-            position: fixed;
-            top: var(--topbar-height);
-            left: 0;
-            right: 0;
-            background: #faf6f0;
-            z-index: 99;
-            border-bottom: 1px solid var(--border-subtle);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-            padding: 12px 16px;
-            max-height: 220px;
-            overflow-y: auto;
-            transform: translateY(-8px);
-            opacity: 0;
-            transition: transform 0.25s ease, opacity 0.25s ease;
-            pointer-events: none;
-        }
-        .mobile-recent-panel.open {
-            display: block;
-            transform: translateY(0);
-            opacity: 1;
-            pointer-events: auto;
-        }
-        .mobile-recent-panel .mrp-item {
-            display: block;
-            padding: 10px 12px;
-            cursor: pointer;
+        .full-text-guide a { color:var(--accent); font-weight:600; text-decoration:none; border-bottom:1px dashed var(--accent); }
+        .full-text-guide a:hover { color:var(--accent-hover); }
+        .photo-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(170px,1fr)); gap:14px; }
+        .photo-grid img { width:100%; aspect-ratio:4/3; object-fit:cover; border-radius:var(--radius-sm); cursor:pointer; transition:transform 0.25s, box-shadow 0.25s; -webkit-tap-highlight-color:transparent; }
+        .photo-grid img:hover { transform:scale(1.03); box-shadow:0 8px 20px rgba(0,0,0,0.15); }
+        .lightbox { position:fixed; inset:0; background:rgba(0,0,0,0.94); z-index:3000; display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity 0.3s; }
+        .lightbox.active { opacity:1; pointer-events:auto; }
+        .lightbox img { max-width:90%; max-height:85vh; object-fit:contain; border-radius:8px; box-shadow:0 20px 50px rgba(0,0,0,0.5); }
+        .lightbox .close-lightbox { position:absolute; top:20px; right:28px; font-size:2.2rem; color:white; background:none; border:none; cursor:pointer; z-index:10; }
+        .lightbox .nav-arrow { position:absolute; top:50%; transform:translateY(-50%); font-size:2.8rem; color:white; background:rgba(0,0,0,0.4); border:none; cursor:pointer; padding:0 18px; border-radius:50%; transition:0.2s; z-index:10; user-select:none; }
+        .lightbox .nav-arrow:hover { background:rgba(0,0,0,0.7); }
+        .lightbox .prev { left:20px; }
+        .lightbox .next { right:20px; }
+        .article-list-item {
+            background: white;
+            padding: 20px 22px;
             border-radius: var(--radius-sm);
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            border-left: 2px solid transparent;
-            transition: var(--transition-smooth);
-            margin-bottom: 2px;
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            transition: 0.2s;
+            -webkit-tap-highlight-color: transparent;
         }
-        .mobile-recent-panel .mrp-item:hover,
-        .mobile-recent-panel .mrp-item:active {
-            background: #ede3d6;
-            border-left-color: #c9a87c;
-            color: var(--text-primary);
+        .article-list-item:hover {
+            transform: translateX(4px);
+            box-shadow: var(--shadow-md);
         }
-        .mobile-recent-panel .mrp-date {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            display: block;
+        .article-list-item h4 {
+            font-size: 1.05rem;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+            color: var(--text);
         }
-        .mobile-recent-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            z-index: 98;
-            background: rgba(0, 0, 0, 0.15);
-            opacity: 0;
-            transition: opacity 0.25s ease;
-            pointer-events: none;
-        }
-        .mobile-recent-overlay.open {
-            display: block;
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        /* ========== 右侧主体 ========== */
-        .main-content {
-            flex: 1;
-            padding: 40px 44px;
-            min-height: 100vh;
-            background: var(--main-bg);
-            transition: background 0.4s ease;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* 面包屑导航 */
-        .breadcrumb {
-            display: flex;
-            align-items: center;
-            gap: 6px;
+        .article-list-item p {
             font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-bottom: 28px;
-            flex-wrap: wrap;
-            letter-spacing: 0.03em;
+            color: var(--text-secondary);
         }
-        .breadcrumb span {
-            cursor: pointer;
-            transition: color 0.2s;
-        }
-        .breadcrumb span:hover {
-            color: var(--text-primary);
-            text-decoration: underline;
-        }
-        .breadcrumb .sep {
-            cursor: default;
-            color: #c5bdb4;
-            text-decoration: none;
-        }
-        .breadcrumb .current {
-            color: var(--text-primary);
-            font-weight: 500;
-            cursor: default;
-            text-decoration: none;
-        }
-
-        /* ========== 首页分类入口 ========== */
-        .category-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 22px;
-            margin-top: 8px;
-        }
-        .category-card {
-            background: #fff;
-            border-radius: var(--radius-md);
-            padding: 32px 24px 26px;
-            text-align: center;
-            cursor: pointer;
-            border: 1px solid var(--border-subtle);
-            box-shadow: var(--card-shadow);
-            transition: var(--transition-smooth);
-            position: relative;
-            overflow: hidden;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .category-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: var(--cat-accent, #c9a87c);
-            border-radius: 0 0 3px 3px;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        .category-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--card-shadow-hover);
-            border-color: #d5cbc0;
-        }
-        .category-card:hover::before {
-            opacity: 1;
-        }
-        .category-card:active {
-            transform: scale(0.97);
-        }
-        .category-icon {
-            font-size: 2.6rem;
-            margin-bottom: 10px;
-            display: block;
-            transition: transform 0.3s;
-        }
-        .category-card:hover .category-icon {
-            transform: scale(1.12);
-        }
-        .category-label {
-            font-size: 1.15rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            letter-spacing: 0.05em;
-        }
-        .category-count {
-            font-size: 0.78rem;
-            color: var(--text-muted);
-            margin-top: 4px;
-        }
-
-        /* ========== 作品列表页 ========== */
-        .work-list {
+        .placeholder-box {
             display: flex;
             flex-direction: column;
-            gap: 18px;
-            animation: fadeInUp 0.4s ease;
-        }
-        .work-card {
-            display: flex;
-            gap: 20px;
-            background: #fff;
-            border-radius: var(--radius-md);
-            overflow: hidden;
-            cursor: pointer;
-            border: 1px solid var(--border-subtle);
-            box-shadow: var(--card-shadow);
-            transition: var(--transition-smooth);
-            -webkit-tap-highlight-color: transparent;
-        }
-        .work-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--card-shadow-hover);
-            border-color: #d5cbc0;
-        }
-        .work-card:active {
-            transform: scale(0.985);
-        }
-        .work-card-cover {
-            width: 160px;
-            min-width: 160px;
-            height: 120px;
-            object-fit: cover;
-            background: #e8e0d5;
-            flex-shrink: 0;
-        }
-        .work-card-info {
-            padding: 16px 20px 16px 4px;
-            display: flex;
-            flex-direction: column;
+            align-items: center;
             justify-content: center;
-            flex: 1;
-            min-width: 0;
+            padding: 60px 30px;
+            text-align: center;
+            min-height: 300px;
+            background: #ffffff;
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-sm);
         }
-        .work-card-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 4px;
-            letter-spacing: 0.03em;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .work-card-meta {
-            font-size: 0.78rem;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-        }
-        .work-card-summary {
-            font-size: 0.88rem;
-            color: var(--text-secondary);
-            line-height: 1.5;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        /* ========== 详情页 ========== */
-        .detail-page {
-            animation: fadeInUp 0.4s ease;
-            max-width: 720px;
-            margin: 0 auto;
-        }
-        .detail-cover {
-            width: 100%;
-            max-height: 380px;
-            object-fit: cover;
-            border-radius: var(--radius-lg);
-            margin-bottom: 24px;
-            background: #e8e0d5;
-            box-shadow: var(--card-shadow);
-        }
-        .detail-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            letter-spacing: 0.04em;
-            margin-bottom: 6px;
-        }
-        .detail-meta {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-bottom: 22px;
-            letter-spacing: 0.03em;
-        }
-        .detail-body {
-            font-size: 1rem;
-            line-height: 1.9;
-            color: var(--text-primary);
-            letter-spacing: 0.025em;
-            white-space: pre-wrap;
-        }
-        .detail-body p {
-            margin-bottom: 1.2em;
-        }
-        .back-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            letter-spacing: 0.04em;
-            transition: color 0.2s;
+        .placeholder-box .icon {
+            font-size: 4rem;
             margin-bottom: 20px;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-            background: none;
-            border: none;
-            font-family: inherit;
-            padding: 6px 0;
+            opacity: 0.6;
         }
-        .back-btn:hover {
-            color: var(--text-primary);
+        .placeholder-box h3 {
+            font-size: 1.5rem;
+            color: var(--text);
+            margin-bottom: 16px;
+            font-weight: 400;
+            letter-spacing: 2px;
         }
-        .back-btn .arrow {
-            transition: transform 0.2s;
-            display: inline-block;
+        .placeholder-box p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            max-width: 500px;
         }
-        .back-btn:hover .arrow {
-            transform: translateX(-4px);
+        .placeholder-box .highlight {
+            color: var(--accent);
+            font-weight: 600;
         }
-
-        /* ========== 动画 ========== */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(16px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        @media (max-width:768px) {
+            .nav { padding:0 20px; }
+            .nav-links { display:none; }
+            .nav-hamburger { display:flex; }
+            .nav-mobile { display:flex; }
+            .hero { background-attachment:scroll; }
+            .block-inner { padding:36px 28px; }
+            .grid-cards { grid-template-columns:repeat(auto-fill, minmax(140px,1fr)); gap:14px; }
+            .card img { height:130px; }
+            .overlay-panel { width:95%; max-height:90vh; border-radius:var(--radius-sm); }
+            .overlay-body { padding:20px; }
+            .book-detail-header .book-cover { width:110px; height:150px; }
+            .article-full h2 { font-size:1.5rem; }
+            .article-full p { font-size:0.95rem; text-indent:1.5em; }
+            .chapter-item { padding:14px 16px; }
+            .chapter-num { width:36px; height:36px; font-size:0.8rem; }
+            .lightbox .nav-arrow { font-size:2rem; padding:0 12px; }
+            .lightbox .prev { left:8px; }
+            .lightbox .next { right:8px; }
+            .photo-grid { grid-template-columns:repeat(auto-fill, minmax(130px,1fr)); gap:10px; }
+            .placeholder-box { padding:40px 20px; min-height:200px; }
+            .placeholder-box .icon { font-size:3rem; }
+            .placeholder-box h3 { font-size:1.2rem; }
+            .placeholder-box p { font-size:1rem; }
         }
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
+        @media (max-width:480px) {
+            .nav { padding:0 14px; height:56px; }
+            :root { --nav-height:56px; }
+            .nav-logo { font-size:1.2rem; letter-spacing:3px; }
+            .hero-title { font-size:2rem; letter-spacing:4px; }
+            .hero-sub { font-size:0.95rem; }
+            .block-inner h2 { font-size:1.8rem; }
+            .block-inner { padding:28px 20px; }
+            .grid-cards { grid-template-columns:1fr 1fr; gap:10px; }
+            .card img { height:110px; }
+            .card-text { padding:12px; }
+            .card-text h4 { font-size:0.9rem; }
+            .overlay-body { padding:14px; }
+            .book-synopsis { padding:16px 18px; }
+            .chapter-item { padding:12px 14px; gap:10px; }
+            .chapter-num { width:32px; height:32px; font-size:0.75rem; }
+            .article-full h2 { font-size:1.3rem; }
+            .article-full p { font-size:0.9rem; }
+            .photo-grid { grid-template-columns:1fr 1fr; gap:8px; }
+            .placeholder-box { padding:30px 16px; min-height:150px; }
+            .placeholder-box .icon { font-size:2.5rem; }
+            .placeholder-box h3 { font-size:1rem; }
+            .placeholder-box p { font-size:0.9rem; }
         }
-
-        /* ========== 响应式设计 ========== */
-        @media (max-width: 900px) {
-            .category-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 14px;
-            }
-            .main-content {
-                padding: 24px 16px;
-            }
-            .work-card-cover {
-                width: 110px;
-                min-width: 110px;
-                height: 90px;
-            }
-            .work-card-info {
-                padding: 10px 14px 10px 2px;
-            }
-            .work-card-title {
-                font-size: 0.95rem;
-            }
-            .work-card-summary {
-                font-size: 0.8rem;
-                -webkit-line-clamp: 2;
-            }
-            .detail-title {
-                font-size: 1.4rem;
-            }
-            .detail-cover {
-                max-height: 240px;
-                border-radius: var(--radius-md);
-            }
+        /* 防复制提示弹窗样式 */
+        .copy-toast {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(44, 44, 44, 0.92);
+            color: #fff;
+            padding: 14px 32px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            z-index: 9999;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.1);
+            max-width: 90%;
+            text-align: center;
         }
-
-        @media (max-width: 768px) {
-            .app-container {
-                flex-direction: column;
-                padding-top: var(--topbar-height);
-            }
-            .sidebar {
-                display: none;
-            }
-            .mobile-topbar {
-                display: flex;
-            }
-            .mobile-recent-panel,
-            .mobile-recent-overlay {
-                display: block;
-            }
-            .mobile-recent-panel {
-                display: none;
-            }
-            .mobile-recent-panel.open {
-                display: block;
-            }
-            .main-content {
-                padding: 20px 14px 32px;
-                min-height: calc(100vh - var(--topbar-height));
-            }
-            .category-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 12px;
-            }
-            .category-card {
-                padding: 22px 16px 18px;
-            }
-            .category-icon {
-                font-size: 2rem;
-            }
-            .category-label {
-                font-size: 0.95rem;
-            }
-            .work-card {
-                flex-direction: row;
-                gap: 12px;
-            }
-            .work-card-cover {
-                width: 90px;
-                min-width: 90px;
-                height: 75px;
-                border-radius: var(--radius-sm) 0 0 var(--radius-sm);
-            }
-            .work-card-info {
-                padding: 10px 12px 10px 0;
-            }
-            .work-card-title {
-                font-size: 0.9rem;
-            }
-            .work-card-summary {
-                font-size: 0.76rem;
-                -webkit-line-clamp: 2;
-            }
-            .detail-page {
-                max-width: 100%;
-            }
-            .detail-title {
-                font-size: 1.3rem;
-            }
-            .detail-body {
-                font-size: 0.92rem;
-                line-height: 1.8;
-            }
-            .breadcrumb {
-                font-size: 0.78rem;
-                margin-bottom: 18px;
-            }
+        .copy-toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
         }
-
-        @media (max-width: 420px) {
-            .category-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 10px;
-            }
-            .category-card {
-                padding: 18px 10px 14px;
-                border-radius: var(--radius-sm);
-            }
-            .category-icon {
-                font-size: 1.6rem;
-                margin-bottom: 4px;
-            }
-            .category-label {
-                font-size: 0.85rem;
-            }
-            .category-count {
-                font-size: 0.7rem;
-            }
-            .work-card-cover {
-                width: 70px;
-                min-width: 70px;
-                height: 60px;
-            }
-            .work-card-title {
-                font-size: 0.82rem;
-            }
-            .work-card-summary {
-                font-size: 0.72rem;
-                -webkit-line-clamp: 1;
-            }
-            .work-card-meta {
-                font-size: 0.68rem;
-            }
-            .main-content {
-                padding: 14px 10px 28px;
-            }
-            .detail-title {
-                font-size: 1.15rem;
-            }
+        .copy-toast .toast-icon {
+            margin-right: 10px;
         }
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <!-- ==================== 桌面端左侧边栏 ==================== -->
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-avatar-wrap">
-                <img
-                class="sidebar-avatar"
-                src="https://picsum.photos/seed/muqingyu-avatar/200/200"
-                alt="穆青宇头像"
-                loading="eager"
-                onerror="this.style.background='#d5c4a8'; this.alt='头像占位';"
-                >
-            </div>
-            <div class="sidebar-name">穆青宇</div>
-            <div class="sidebar-recent-title">最近发布</div>
-            <ul class="sidebar-recent-list" id="sidebarRecentList">
-                <li class="sidebar-recent-empty">加载中…</li>
-            </ul>
-        </aside>
-
-        <!-- ==================== 移动端顶部条 ==================== -->
-        <div class="mobile-topbar" id="mobileTopbar">
-            <img
-            class="mt-avatar"
-            src="https://picsum.photos/seed/muqingyu-avatar/200/200"
-            alt="穆青宇头像"
-            onerror="this.style.background='#d5c4a8'; this.alt='头像占位';"
-            >
-            <span class="mt-name">穆青宇</span>
-            <button class="mt-recent-btn" id="mtRecentBtn" aria-label="展开最近发布">最新 ▾</button>
-        </div>
-        <div class="mobile-recent-overlay" id="mobileRecentOverlay"></div>
-        <div class="mobile-recent-panel" id="mobileRecentPanel">
-            <div id="mobileRecentList" style="font-size:0.82rem;color:var(--text-muted);text-align:center;padding:10px;">加载中…</div>
-        </div>
-
-        <!-- ==================== 右侧主体内容 ==================== -->
-        <main class="main-content" id="mainContent">
-            <!-- 动态渲染 -->
-        </main>
+    <!-- ===== 防复制提示弹窗 ===== -->
+    <div class="copy-toast" id="copyToast">
+        <span class="toast-icon">🔒</span>
+        未经作者授权，禁止商用转载
     </div>
+
+    <!-- 导航栏 -->
+    <nav class="nav" id="mainNav">
+        <a href="#hero" class="nav-logo">木千余</a>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#section-novels">小说</a></li>
+            <li><a href="#section-prose">散文</a></li>
+            <li><a href="#section-essays">随笔</a></li>
+            <li><a href="#section-blog">博客</a></li>
+            <li><a href="#section-photo">摄影</a></li>
+            <li><a href="#section-mood">情绪</a></li>
+        </ul>
+        <button class="nav-hamburger" id="hamburgerBtn" aria-label="菜单"><span></span><span></span><span></span></button>
+        <ul class="nav-mobile" id="mobileMenu">
+            <li><a href="#section-novels">小说</a></li>
+            <li><a href="#section-prose">散文</a></li>
+            <li><a href="#section-essays">随笔</a></li>
+            <li><a href="#section-blog">博客</a></li>
+            <li><a href="#section-photo">摄影</a></li>
+            <li><a href="#section-mood">情绪</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <!-- Hero -->
+        <section class="hero" id="hero">
+            <div class="hero-content">
+                <h1 class="hero-title">我叫木千余</h1>
+                <p class="hero-sub">用文字与影像，安放每一寸思绪</p>
+            </div>
+            <div class="scroll-indicator" id="scrollIndicator">
+                <span>探索</span>
+                <div class="scroll-arrow"></div>
+            </div>
+        </section>
+
+        <!-- 小说 -->
+        <section class="section-block" id="section-novels" style="background-image:url('https://images.unsplash.com/photo-1512820790803-83ca734da794?w=1200&q=80');">
+            <div class="block-inner">
+                <h2>小说作品</h2>
+                <p>沉浸在虚构世界的精彩故事中</p>
+                <button class="btn btn-outline" data-overlay="overlay-novels">潜入故事</button>
+            </div>
+        </section>
+
+        <!-- 散文 -->
+        <section class="section-block" id="section-prose" style="background-image:url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1200&q=80');">
+            <div class="block-inner">
+                <h2>散文</h2>
+                <p>用文字镌刻记忆深处的人与事</p>
+                <button class="btn btn-outline" data-overlay="overlay-prose">阅读散文</button>
+            </div>
+        </section>
+
+        <!-- 随笔 -->
+        <section class="section-block" id="section-essays" style="background-image:url('https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1200&q=80');">
+            <div class="block-inner">
+                <h2>随笔</h2>
+                <p>拾起时光碎片，记录生活纹理</p>
+                <button class="btn btn-outline" data-overlay="overlay-essays">拾光随笔</button>
+            </div>
+        </section>
+
+        <!-- 博客 -->
+        <section class="section-block" id="section-blog" style="background-image:url('https://images.unsplash.com/photo-1455390582262-044cdead277a?w=1200&q=80');">
+            <div class="block-inner">
+                <h2>博客分享</h2>
+                <p>思考与日常，在此沉淀</p>
+                <button class="btn btn-outline" data-overlay="overlay-blog">思想手记</button>
+            </div>
+        </section>
+
+        <!-- 摄影 -->
+        <section class="section-block" id="section-photo" style="background-image:url('https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=1200&q=80');">
+            <div class="block-inner">
+                <h2>摄影作品</h2>
+                <p>定格瞬间，留住光影</p>
+                <button class="btn btn-outline" data-overlay="overlay-photo">定格瞬间</button>
+            </div>
+        </section>
+
+        <!-- 情绪 -->
+        <section class="section-block" id="section-mood" style="background-image:url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1200&q=80');">
+            <div class="block-inner">
+                <h2>情绪</h2>
+                <p>捕捉内心的微妙波动</p>
+                <button class="btn btn-outline" data-overlay="overlay-mood">心绪微光</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- ===== 小说覆盖层（31章） ===== -->
+    <div class="overlay" id="overlay-novels">
+        <div class="overlay-panel">
+            <div class="overlay-header"><h3>📖 小说作品</h3><button class="overlay-close">✕</button></div>
+            <div class="overlay-body" id="novelsBody">
+                <div class="list-view" id="novelsList">
+                    <div class="grid-cards">
+                        <div class="card" data-book="荒凉如梦">
+                            <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&q=80" alt="荒凉如梦">
+                            <div class="card-text"><h4>《荒凉如梦》</h4><p>那年盛夏，方旭爱上了一个让他一生都在怀念的少年。</p></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="detail-view book-detail" id="bookDetail-荒凉如梦">
+                    <button class="back-btn" data-back="novelsList">返回作品列表</button>
+                    <div class="book-detail-header">
+                        <img class="book-cover" src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&q=80" alt="荒凉如梦">
+                        <h2>《荒凉如梦》</h2>
+                        <p class="book-author">作者：木千余</p>
+                    </div>
+                    <div class="book-synopsis"><h4>✦ 作品简介</h4><p>那年盛夏，方旭爱上了一个让他一生都在怀念的少年……</p></div>
+                    <p class="chapter-section-title">📑 章节目录（共31章）</p>
+                    <div class="chapter-list" id="chapterList"></div>
+                </div>
+                <div id="chapterContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 散文覆盖层（赵雪英完整全文） ===== -->
+    <div class="overlay" id="overlay-prose">
+        <div class="overlay-panel">
+            <div class="overlay-header"><h3>📝 散文</h3><button class="overlay-close">✕</button></div>
+            <div class="overlay-body" id="proseBody">
+                <div class="list-view" id="proseList">
+                    <div style="display:flex; flex-direction:column; gap:14px;">
+                        <div class="article-list-item" data-prose="赵雪英"><h4>赵雪英 —— 遥远的地方还有伤痛吗？</h4><p>您在远方的世界过得还好吗？身体是否还痛着？您的离开是对您自己的解脱……</p></div>
+                    </div>
+                </div>
+                <div class="detail-view" id="proseContent-赵雪英">
+                    <button class="back-btn" data-back="proseList">返回散文列表</button>
+                    <div class="article-full">
+                        <h2>赵雪英 —— 遥远的地方还有伤痛吗？</h2>
+                        <p style="text-indent:0;color:var(--text-secondary);font-size:0.9rem;margin-bottom:20px;">作者：木千余</p>
+                        <p>您在远方的世界过得还好吗？身体是否还痛着？您的离开是对您自己的解脱，也是让我心中沉重大石落下的主要原因。</p>
+                        <p>我想你了——赵雪英。</p>
+                        <p>我探索脑海中碎片记忆，最早时只记得您那佝偻的身影，随后迎来的便是刻在我脑海里不变的模样。</p>
+                        <p>记忆最早时，我与父亲回家，将您接回父亲新建的楼房中，那时您还不愿意坐上父亲的车来到这里，最后还是父亲态度强硬地把您接了过来，您被父亲搀扶着上了那辆面包车，我站在一旁静静地看着。</p>
+                        <p>记忆又迎来了一个翻页，迎来的是我讨厌你的时候。</p>
+                        <p>那时您总坐在家门口看着公路的车水马龙，还用手撑着凳子在地板上反反复复摩擦出嘎吱嘎吱的声音。您用那根扁平的竹子反复敲打着地面，发出笃笃的声音。您每走一步，便会迎来竹子敲打地面的声音，亦是那凳子摩擦出的嘎吱声。</p>
+                        <p>我也是听着这个声音长大的。</p>
+                        <p>那时您还爬得了楼，我也还小，您时常会从一楼爬到二楼门口处，哈哈喘着大气。渐渐的，我意识到了，你好像已经很久很很久没再来过那二楼的门口处喊着我，那模样在我的脑海中逐渐发糊，我也早就记不清您驼着拐杖喘着气的模样。</p>
+                        <p>你不再有力气一步一步蹒跚着爬到二楼门口看我，迎来的便是您在一楼楼口处喊我的场景。这个时期是我最烦你的时候，现在回想也是我最为懊悔的时候。</p>
+                        <p>那时你常常叫我，我次次听到您的喊叫都要放下手中的一切跑到楼梯处的拐角处，因为那是你能看见我，我也看得见你的最近距离。</p>
+                        <p>您的喊叫声只有在看到我的模样时才会停歇</p>
+                        <p>因为您的左耳失聪，我每次回应你都要大声回应。有时您也听不清我在说些什么，却看到我那不耐烦的神情，便笑着点点头，招了招手低着头拖着那沉重的身体，佝偻着腰，用那凳子一步一步移动着，留下的只有那地板与地面摩擦发出的嘎吱声。</p>
+                        <p>赵雪英啊，赵雪英，我对你的感情错综复杂。现在回头一看，满是遗憾和懊悔。可做都做了，现在后悔又有何用？</p>
+                        <p>那时你一天喊我几十次，有时听得我耳朵都要起茧子了，我也时常抱怨不断，有时还会咒骂几声。我多么希望我的奶奶是个有水平、有文化且听得清我说话的人呐。那时我多么希望您快些离去，可真到那天，心中又无端泛起无数涟漪。</p>
+                        <p>在我小学五年级那个酷暑里，我从学校回到家中，奶奶的饭菜一点没动。直到父亲都回来了，伯父们和邻居都围着她，她就静坐在那挺着脊梁看着周围的人，我不敢直视奶奶的眼睛，也无法睁眼看着她那张慈祥的脸。</p>
+                        <p>邻居笑着开口问奶奶："为什么不吃饭？"</p>
+                        <p>奶奶嘴里喃喃着，"要回老家，我要回老家。"</p>
+                        <p>那时的老家早已荒废，爷爷离我们而去已经有几年了。邻居佝偻着身影问着奶奶，"你要回老家干嘛？"奶奶声音喃喃道："我快不行了，快送我回老家，快送我回老家。"父亲听到坚决不愿意让您回老家，后面我心头一酸，实在不愿看到您那模样。便悄悄上了楼。我来到二楼的厕所长廊边上低着头看着镜子里的我。</p>
+                        <p>心中莫名涌起酸涩，我不再能压抑和控制那无端的情绪，眼泪一点点从我眼角滑落。姐姐察觉我的情绪开口道："你哭什么奶奶这不还没走呢吗？"我没有作答，只是快步地进了厕所里打开了水，眼泪交融着流水，汹涌的朝地板砸去，疼的地板泛起水花。</p>
+                        <p>也不知是这酷暑作怪将我的奶奶变成如今这般模样，还是她真能预知自己的死亡时间？</p>
+                        <p>日子一天天过去，您也没能回成老家，依旧天还没亮就从伯父家走到我们家。记忆里有片刻关于您从伯父家走来我们家的场景。那时我不知因为什么事起了个大早，我站在家门口望着您拄着那根细竹做的拐杖蹒跚地走向我，我就站在马路对面看着你就那样静静地看着，直到您走到我的身边朝着我笑着。</p>
+                        <p>我记得您一共进了三次院，在最后一次时，你彻底地失去了自由行动的能力，你被囚禁于轮椅之上。我那时问父亲，为何要将你困在这轮椅之上，父亲大口大口抽着烟，烟雾缭绕在空气当中，我竟看不清他的脸，他低着头，灯光映在了他的眼里缓缓回道："因为你的奶奶从床上摔了下来，如果再摔一次，她的生命将永远被定格在那一刻。"</p>
+                        <p>我记得他是带着慈父的语气与眼神看着我说道，但我不理解父亲为何要将一个人囚禁在这漆黑的轮椅中。</p>
+                        <p>我也不懂父亲对自己母亲的爱，我看到的只有奶奶被囚禁在那轮椅上的痛。</p>
+                        <p>那天之后，您被囚禁在那轮椅之上，吃喝拉撒全在那黑色的轮椅之上，您的叫唤声也渐渐变少，我听到您的叫唤时，您必有事找我。</p>
+                        <p>有时是您想吃饭了，又有时是您从高处滑落而下，只能瘫坐在那轮椅上，任凭肌肉变得麻木，您每次的叫唤，迎来的都是我无休止的抱怨。</p>
+                        <p>我想您快点离开这个世界，想您不再被这轮椅囚禁您的自由，也带着自己的自私。</p>
+                        <p>您要怪您就怪我孩童般的脸面吧。您坐在轮椅上时，我心血来潮，不愿您一人坐在那轮椅之上，独自守候着这房子空洞的黑，与一个人面对时间长河的苦。我与姐姐推着轮椅，带你在家的周围走动着，我笑着将您推向众人，但也只有几次，因为每次推着您走出去时迎来的都是带着刺的目光，当时我竟觉得推您出去丢脸，那次之后，我便很少推您出去走动了。之后的一长段时间里，您便被彻底困在这轮椅上，与那时间长河与那漆黑的房子对抗着。</p>
+                        <p>我会心痛您，所以在父亲母亲为您洗澡时与他们说道，"爸妈让奶奶在椅子上坐久一点吧，多给她那双脚放松放松吧。"奶奶几乎24小时都靠在那张轮椅上，所以我想在她在能接触地面时就尽可能地多多接触地面，这似乎是我能做的最好的选择。</p>
+                        <p>如果现在我能够带着如今的眼界回到过去，我一定会与家里人反抗到底坚决不会再让您独自坐在那刺骨的轮椅上，反反复复，一年又一年。您坐在轮椅上时我心中便早已明白，您坐在轮椅上，迎来的只有死亡。</p>
+                        <p>父亲为了不舍让自己的母亲逝世，用着那比逝世更让我难以接受的方式强行将我奶奶的身体困在那漆黑的椅子上强行续命，至今我都无法接受。</p>
+                        <p>父亲的自私，我记在心眼里，对您的遭遇，我疼在心里。</p>
+                        <p>后面的日子，您不只是在我们家住着，开始了与父亲三兄弟平分的日子，每人10天。我每次给您送饭时，您那眼睛都变得极其空洞。我也没心思一直陪在您身边，与您聊天。后来我发现了一个小电视的东西，里面只要放碟片就能放映出动画。我与父亲讨论，在您轮椅面前放上一个，小电视里面放我们当地比较有名的戏曲——雷剧。</p>
+                        <p>后面我发现那小电视被丢在一旁，我开口问向父亲，"为什么不将曲目放给奶奶看了？"父亲依旧大口抽着烟，紧皱着眉头看着我回道："你奶奶好像有点害怕那里的东西。"我点了点头，回到了我的世界里。</p>
+                        <p>如果当初我有如今的心境，我会将我空闲的时间全部分享给您，我现在最怀念的人——赵雪英。</p>
+                        <p>有天我从学校回到家时，你的一切用品全部消失，我才发现你已经被父亲接回了老家。那天之后，我对你的存在少了那么几分快意，心里莫名泛着酸。又一年酷暑，老家后院的龙眼长得极旺，我与堂弟回老家摘取时，从后院走到前厅看着您一个人独守在那空洞且寂静的主厅里，您一个人独守着这份寂寞，我看得实在心疼，我将树上刚摘下的龙眼用手拨开外壳与里面的黑核，将一小碗龙眼肉放在您的桌上，我知道您爱吃甜的，所以我专门挑了最大颗的龙眼，那碗里的龙眼肉我喂了您吃了几颗便匆匆赶回了家，回了没有你的家。</p>
+                        <p>那次之后，我很少探望您，连您最后一面也没能见到。明明我与您的距离相隔不到一公里，相隔不到一公里啊，为什么我时常不去探望您呢？</p>
+                        <p>你走的那天，我起的比较早，起来之后我便去打扫卫生了，后面接着母亲的电话，她让我快去找舅公去砍一根竹子，回来顶一下这房梁，此刻我便明白家里的顶梁柱塌了。我放下手中的扫把，赶去了舅公家，与舅公说完些事便回来继续打扫起了家里的卫生。</p>
+                        <p>父亲从老家赶回来时用着他那张充满凝重的脸语气温柔地对我说道："别扫了，奶奶走了。"</p>
+                        <p>但我并未放下扫把，我开口和父亲说道，"我快扫完了，等我扫完吧，很快。"</p>
+                        <p>父亲点了点头，我便继续扫着，直到母亲回来亲手将我手上的扫把放到一边，这才让我停下了扫地。</p>
+                        <p>他们还未在家停留多少便又匆匆赶回老家，我收到了母亲让我买水果的单子，我买了一箱苹果和很多香蕉回到老家，我无法走进那间我熟悉既陌生的老房子里，我只能待在门口看着里屋的寂静，我将水果放到门口便回了家。</p>
+                        <p>第二天我才走进了这房子里，主厅中间摆放的是一张发红的棺材，上面写着一个大"喜"字。</p>
+                        <p>在那个酷暑，你终于走了，你终于摆脱了这囚笼，我真心为你感到开心。</p>
+                        <p>那天天气很好，太阳很大，那天我心中所想，您的离去应该引得天空异动天空变得阴阴沉沉，我就觉得您的逝去，就该引得这天地垂怜。</p>
+                        <p>但后来我发觉是您太伟大，才不会引得天地下雨，如果那一天下雨的话，我们将无法那么顺利完成法事，也无法那么顺利地让您入土。</p>
+                        <p>那天送您出殡时，我想的是我应该落泪，也是心中不舍，可那天没有，一点也没有，只是觉得很平常，但又没那么平凡。</p>
+                        <p>那时我不懂离别的重量，只想快点失去您，过我们一家的日子，我不曾察觉，没有您就没有这个家，此刻我真的后悔了。</p>
+                        <p>赵雪英，此刻我是真的有点想你了，我再也不能见到你那慈祥的脸庞了。</p>
+                        <div class="full-text-guide">📖 因技术原因无法展示全文，想看全文请到微信公众号搜索 <strong>“木千余”</strong>。</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 随笔覆盖层（两篇完整） ===== -->
+    <div class="overlay" id="overlay-essays">
+        <div class="overlay-panel">
+            <div class="overlay-header"><h3>✍️ 随笔</h3><button class="overlay-close">✕</button></div>
+            <div class="overlay-body" id="essaysBody">
+                <div class="list-view" id="essaysList">
+                    <div style="display:flex; flex-direction:column; gap:14px;">
+                        <div class="article-list-item" data-essay="归乡"><h4>我要在外奔波多久才能安然归乡？</h4><p>又一假期，我独坐高铁上望着车外的景……</p></div>
+                        <div class="article-list-item" data-essay="过往"><h4>你最近过得还好吗？</h4><p>我们分开已有半年，这半年里我不断打扰你们幸福……</p></div>
+                    </div>
+                </div>
+                <!-- 归乡 -->
+                <div class="detail-view" id="essayContent-归乡">
+                    <button class="back-btn" data-back="essaysList">返回随笔列表</button>
+                    <div class="article-full">
+                        <h2>我要在外奔波多久才能安然归乡？</h2>
+                        <p style="text-indent:0;color:var(--text-secondary);font-size:0.9rem;margin-bottom:20px;">作者：木千余</p>
+                        <p>又一假期，我独坐高铁上望着车外的景，来来往往不过是记忆里的模样，我时常踏上归乡的路程，只是停靠，无法安居。</p>
+                        <p>我想停下来，停靠在港湾，可我不能，只能暂时停留。我对未来感到无望，一心想成名后衣锦还乡，可生于普通家庭的我又怎会有那般能力？我只能来回徘徊，在归乡的路途之中。</p>
+                        <p>白发趁着年华爬上了他的两鬓，满是褶皱的手是时间浸过的痕迹，我无法无视，也无能改变，只能懊恼。</p>
+                        <p>人潮的来往让我找不到方向，出发的那颗至诚的心早已在人海中迷失，我忘记了奔赴他乡的原因，或许只想出来，或许想功成名就，这些都已不再重要，现在我只想归乡。</p>
+                        <p>那日与朋友闲谈，他问："你现在最想做的事是什么？"</p>
+                        <p>我沉思许久缓缓开口："我想归乡。"</p>
+                        <p>"想归乡随时都可以归的呀。"</p>
+                        <p>"不，并不是。"</p>
+                        <p>"不是什么？"</p>
+                        <p>"回不去了。"</p>
+                        <p>"啊？为什么？"他疑惑问道。</p>
+                        <p>"不是所有人都有选择的权利。"</p>
+                        <p>"我看你家里人对你挺好的呀，你想回只要打个电话不就好了吗？"</p>
+                        <p>"是，他们对我挺好的，但每次回去都少了小时候的感觉。"</p>
+                        <p>"小时候的感觉？"他紧皱眉，拿起桌上的酒喝了口，望着我。"小时候的感觉是什么感觉？"</p>
+                        <p>"一种想到回家就会兴奋的感觉。"</p>
+                        <p>"那你现在没有这种感觉了吗？"</p>
+                        <p>"好像大学之后就没有了。"</p>
+                        <p>"那你还想回家吗？"</p>
+                        <p>"想。只不过是想回到记忆里那个无忧无虑的家。"</p>
+                        <p>"记忆里的？"</p>
+                        <p>"对，记忆里的。"</p>
+                        <p>"记忆与现实总会有差距的呀，我们随着岁月的奔走我会不断美化记忆的。"</p>
+                        <p>"嗯。"我轻声应下，"所以我才说回不去了。"</p>
+                        <p>"那你还想归乡吗？"</p>
+                        <p>"想，工作之后每天都在想。"</p>
+                        <p>"是感受到了社会的苦了吗？"</p>
+                        <p>"不止，还有迷茫。这里太大了，大到我显得渺小，如尘埃，什么都看不见，什么都握不住。"</p>
+                        <p>"你说，我们出来的初心是什么？"他再次握起酒杯喝了起来，"功成名就？衣锦归乡？"</p>
+                        <p>"不，我只是出来。"</p>
+                        <p>"那你要到哪里去？"</p>
+                        <p>"不知道，只是顺着潮流出来，潮流往哪流我就往哪走。"</p>
+                        <p>"那你没点想干的事吗？比如理想什么的？"</p>
+                        <p>"有，被失败打磨没了。"</p>
+                        <p>"那你应该重新捡自己的那个理想啊！"</p>
+                        <p>"那你还在坚持自己的理想吗？"</p>
+                        <p>他沉默了，"来，我们喝酒。"</p>
+                        <p>酒杯相撞，发出"砰"声，溅出的酒花顺着人潮的脚步一点点消亡，只剩无期。</p>
+                        <p>我有一颗归乡心，但我找不到归乡的路了。</p>
+                        <div class="full-text-guide">📖 因技术原因无法展示全文，想看全文请到微信公众号搜索 <strong>“木千余”</strong>。</div>
+                    </div>
+                </div>
+                <!-- 过往 -->
+                <div class="detail-view" id="essayContent-过往">
+                    <button class="back-btn" data-back="essaysList">返回随笔列表</button>
+                    <div class="article-full">
+                        <h2>你最近过得还好吗？</h2>
+                        <p style="text-indent:0;color:var(--text-secondary);font-size:0.9rem;margin-bottom:20px;">作者：木千余</p>
+                        <p>你最近过得还好吗？离开我你幸福多了吧。我们分开已有半年，这半年里我不断打扰你们幸福，我是否太过下贱了呢？</p>
+                        <p>为了让你回头我竟一次次放下自尊，一次次违背我的原则舔着脸去找你复合，你最明白我把脸面看得最为重要，你不会不清楚我对你的爱是多么炽热。</p>
+                        <p>我们相恋了五百多天，不知何时开始我们变得连开口都成了问题，我常常在夜里回忆我们的曾经。</p>
+                        <p>初见时，我捧着鲜花站在路边待你出现，你与堂姐各自开着车停在簪花店门口，你下车时低着头打理着发梢，是在为我们见面提前做准备吗？</p>
+                        <p>我捧着鲜花朝你走去，你睁大了瞳孔，嘴角微微上扬，我笑着将鲜花递给了你，你惊讶地接过鲜花，我们并肩走入店里。相见的那天像是在举行我们的婚礼，我们穿着明制的服装走在街头小巷，路人纷纷投来炽热的目光，我们的眼神相互交映像是在试探彼此的爱意，直至今日我都无法忘记初见你时，你那带着爱意望向我的目光。</p>
+                        <p>可是我爱的人死在了我的19岁，留给我的只有与他相似的躯体，那占据着我爱人的皮囊的人，我恨我的爱人，恨他抛我而去，留给我一个披着与他相似身躯的人折磨着我。</p>
+                        <p>爱意最浓厚时我们处于异地，我曾在夜里见过他为我哭着红肿的脸，他眼神带着光亮，望向我时带着浓厚的爱意，我笑着看着他的脸庞，心甘情愿为他落下重重的泪。</p>
+                        <p>因为他我爱上了火锅，那时年少拮据，我带他去吃火锅时，他总将第一口吃食放进我的碗里才会吃上第一口，我也总会笑着看着他，他吃上第一口毛肚时那张扬的笑意，是我悲伤时最能治愈我的良药。他最爱重口，我恰好喜欢，但日子拮据我无法一次次满足他的要求，我知道他有钱，但我没有，所以我时常在想如何快点获得一些财富来满足他的需求，我当初多么想快些成为他的依靠，可是直至分开我都无法成为当初想成为的自己，所以我时常在懊悔，为何当初不对他好一些。</p>
+                        <p>我们最喜欢吃完火锅到海边漫步消消食，我们扶着鼓起的肚子漫步在沙滩上，他总是笑着看着我的脸，我也会用身体与他触碰，他有时喜欢走在我的前面，我会在他的身后紧紧地看着，那时我的脸上总挂着笑，你知道为何吗？</p>
+                        <p>我像是看到了我们的未来，我真的成为了他的依靠，他只需无忧无虑地奔跑，我就紧紧地在他身后成为他最结实的后盾。</p>
+                        <p>比我幻想先来的是我们的分开，提到他时我时常哽咽，竟怨自己当初没再更爱他。</p>
+                        <p>我曾在海湾大桥下在心里为他立下誓言，我发誓自己往后不会轻慢他的心，也不会出轨，更不会抛弃他，可是他并不这么想，我看轻了他的狠心。</p>
+                        <p>你还记得站在大桥下说过什么话吗？我依稀记得，你说："我阮倦发誓，我这一生只和方旭共白头。"</p>
+                        <p>是不是我们当初还小不懂得爱的重量，所以才能脱口而出那些沉重的誓言？</p>
+                        <p>如果不能答应和我白头，那就早些给我回应，好叫我忘了曾经。</p>
+                        <p>我自以为我们能走到白首，可我也低估了爱的浓度与争吵带给我们的影响。</p>
+                        <p>现在算算你和你现任在一起也快半年了吧？我无休止的纠缠就停在现在吧，我累了，也该祝你幸福了。</p>
+                        <p>现在想想当初做的决定当真愚蠢，在得知你已经有对象时，还远赴百里，孤身一人来到你的城市。我独自站在海边被风灌了几个小时，有些醉，就是为了见你一面，当真是可笑。</p>
+                        <p>在得知你现任在外与人扩列时，我竟比你更先一步恨他，恨他这样轻浮你的爱，我也是当真傻得可笑，你当初那样轻浮我的心，我的心里还是先你一步为你着想。</p>
+                        <p>回首往昔，你最讨厌的不就是被背叛吗？怎么我去找你说他出轨的事你竟会义无反顾地原谅他？你当真爱过我吗？</p>
+                        <p>你的离开让我生了很长一段时间的心病，直到今天，我的心还在隐隐作痛。</p>
+                        <p>那天中午我再次添加上了他的联系方式，我以为我们会重新续写属于我们未来宏图，但他却用实际行动给了处于幻想中的我当头一棒，将我敲得如梦初醒。</p>
+                        <p>那时是下午的三点多，我重新添加了你的联系方式，就在那个晚上我们聊得热火朝天，可你还是那般冷漠，我也还是那般热情，却已不像初见时的模样。</p>
+                        <p>我们就在那聊了一个晚上，直到夜里十二点多，我笑着问你，"我们可以打视频吗？"</p>
+                        <p>经过我几番挣扎，你终于同意了，我那时自以为我们将要复合，我笑着给你打去电话，可因为网络问题无法接通，我等你给我打来电话，那天晚上我看到了你，你的模样里带着初见般的纯真，与我心中的你毫无区别，我笑着开口道："你最近有没有按时吃饭？"</p>
+                        <p>你笑着开口，"有哦，我有按时吃饭和喝水。"</p>
+                        <p>我笑着看你脸上洋溢的笑，但是聊着聊着我看到你眼镜里映出的手机画面，是一长串的聊天记录，我退出视频电话便看到了你又换回了情侣头像，我问你："你们复合了？"你说："这个是我自己换着玩的。"话落便将另一半的头像发了过来，"呐，给你。"</p>
+                        <p>我自以为我们将要重归于好，但我点开了他的微信才知道，你们已经复合，我气愤又嫉妒，我那时恨透了你，我也厌倦了我自己为何要这般爱着你，我恨的不是你，是那个曾经处处为我着想爱着我的人，此刻他披着你的皮囊再一次伤害了我，你看见了吗？</p>
+                        <p>在远赴百里的前夜，他也用同样的话语欺骗过我，只是这次我看到了真相才得以不再陷入你的谎言。</p>
+                        <p>我竟还会相信你说的话，我当真可笑。</p>
+                        <p>我爱的那个人啊，你去了何处，为何你一次次地放任着一个披着你皮囊的人伤害着我的心，我想你了，你何时才能回来？</p>
+                        <p>我从他乡回到你的城市，你见到我时是否懊悔过这样对待着我的真心？你小看了我，小看了我想陪你白首的决心。</p>
+                        <p>在回乡那夜得知你身边已经有了新人时便该舍弃你，舍弃有你的过去，可是我心太软不舍我们的过去就这样被人遗忘，更不舍得那些美好的回忆消失，那时起我独自一人守着我们的回忆苦苦等待着你的归来。</p>
+                        <p>我早就成了鳏夫，一个失去了爱人的男人，你也早就死在了我的十九岁，永远活在了我的回忆里。</p>
+                        <p>我的爱人消失了，我似乎再也找不回他了，我明知答案却依旧独守着我们之间的共同的记忆，我像个蠢货。</p>
+                        <div class="full-text-guide">📖 因技术原因无法展示全文，想看全文请到微信公众号搜索 <strong>“木千余”</strong>。</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 博客覆盖层（占位提示） ===== -->
+    <div class="overlay" id="overlay-blog">
+        <div class="overlay-panel">
+            <div class="overlay-header"><h3>💡 博客分享</h3><button class="overlay-close">✕</button></div>
+            <div class="overlay-body">
+                <div class="placeholder-box">
+                    <div class="icon">📝</div>
+                    <h3>博客 · 敬请期待</h3>
+                    <p>作者有点懒，如若想更快看到可以关注微信公众号：<span class="highlight">木千余</span>哦。我们敬请期待。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 摄影覆盖层（占位提示） ===== -->
+    <div class="overlay" id="overlay-photo">
+        <div class="overlay-panel">
+            <div class="overlay-header"><h3>📷 摄影作品</h3><button class="overlay-close">✕</button></div>
+            <div class="overlay-body">
+                <div class="placeholder-box">
+                    <div class="icon">📸</div>
+                    <h3>摄影 · 敬请期待</h3>
+                    <p>作者有点懒，如若想更快看到可以关注微信公众号：<span class="highlight">木千余</span>哦。我们敬请期待。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 情绪覆盖层（占位提示） ===== -->
+    <div class="overlay" id="overlay-mood">
+        <div class="overlay-panel">
+            <div class="overlay-header"><h3>🌙 情绪</h3><button class="overlay-close">✕</button></div>
+            <div class="overlay-body">
+                <div class="placeholder-box">
+                    <div class="icon">🌙</div>
+                    <h3>情绪 · 敬请期待</h3>
+                    <p>作者有点懒，如若想更快看到可以关注微信公众号：<span class="highlight">木千余</span>哦。我们敬请期待。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 摄影灯箱 ===== -->
+    <div class="lightbox" id="lightbox">
+        <button class="close-lightbox">✕</button>
+        <button class="nav-arrow prev">‹</button>
+        <img src="" alt="放大图片" id="lightboxImg">
+        <button class="nav-arrow next">›</button>
+    </div>
+
+    <footer style="text-align:center; padding:36px 24px; color:var(--text-secondary); letter-spacing:1.5px; font-size:0.85rem;">
+        © 2026 未经作者允许禁止商用或转载，转载请注明出处。<br>
+    </footer>
 
     <script>
-        (function() {
-            // ==================== 数据定义 ====================
-            // 【注意】以下所有作品数据均为示例/占位数据，实际使用时请替换为真实内容。
-            // 每个作品中的 content 字段开头均标注了"【待替换】"，提示该位置需替换为真实数据。
-            // 封面图使用 picsum 占位图服务，实际部署时请替换为自有图片资源。
+    (function() {
+        // ===== 防复制/截图/右键 =====
+        const toast = document.getElementById('copyToast');
+        let toastTimer = null;
 
-            const WORKS_DATA = [
-                // ===== 小说 (novel) =====
-                {
-                    id: 'novel-001',
-                    category: '小说',
-                    title: '深夜咖啡馆',
-                    date: '2026-07-05',
-                    cover: 'https://picsum.photos/seed/novel-cafe/400/280',
-                    summary: '在城市的转角处，有一家只在深夜开门的咖啡馆，每个客人都带着故事而来。',
-                    content: '【待替换】\n\n深夜的街道上，路灯将影子拉得很长。我推开那扇不起眼的木门，铃铛发出清脆的声响。咖啡馆里只有三两个客人，每个人都沉浸在自己的世界里。老板是个沉默的中年男人，他看了我一眼，点了点头，仿佛早已知道我会来。\n\n"来杯什么？"他问。\n\n"你推荐吧。"\n\n他转身开始研磨咖啡豆，空气中弥漫着深烘豆特有的焦香。我选了一个靠窗的位子坐下，窗外的城市正在沉睡，而这里，故事才刚刚开始……'
-                },
-                {
-                    id: 'novel-002',
-                    category: '小说',
-                    title: '山海遥',
-                    date: '2026-05-20',
-                    cover: 'https://picsum.photos/seed/novel-mountain/400/280',
-                    summary: '一段跨越山海的旅途，一次关于寻找与失去的叙事。',
-                    content: '【待替换】\n\n列车穿过隧道，光明与黑暗交替出现。她坐在靠窗的位置，手里握着一张泛黄的地图，上面标注着一个遥远的小镇。那是祖母生前反复提起的地方，一个她从未去过却无比熟悉的所在。\n\n山海遥，路漫漫。她不知道到达那里之后会发现什么，但她知道，有些答案只有在路上才能找到。窗外的风景不断变换，从平原到丘陵，从城市到荒野，像是在翻阅一本厚重的书……'
-                },
-                {
-                    id: 'novel-003',
-                    category: '小说',
-                    title: '镜中人',
-                    date: '2026-04-12',
-                    cover: 'https://picsum.photos/seed/novel-mirror/400/280',
-                    summary: '每天早晨对镜自照，镜中人似乎越来越不像自己。',
-                    content: '【待替换】\n\n镜子里的那个人，眼角有了细纹，鬓角隐约泛白。他盯着我看，我也盯着他。我们之间隔着一层玻璃，却仿佛隔着漫长的时光。\n\n我伸手触碰镜面，他的指尖与我的指尖重合，冰凉的触感从指尖传来。那一刻，我忽然分不清——究竟是我在看他，还是他在看我？究竟镜子外的是真实的，还是镜子里的才是本来的模样？\n\n这个疑问，从那天起再也没有离开过我……'
-                },
-                {
-                    id: 'novel-004',
-                    category: '小说',
-                    title: '秋日渡口',
-                    date: '2026-03-08',
-                    cover: 'https://picsum.photos/seed/novel-ferry/400/280',
-                    summary: '渡口的老船夫说，他在这条河上摆渡了四十年，见过无数离别与重逢。',
-                    content: '【待替换】\n\n秋天的渡口，芦苇在风中摇曳。老船夫坐在木桩上抽着旱烟，烟雾在夕阳中缓缓升起。\n\n"四十年了，"他说，"这条河还是这条河，可过河的人换了一茬又一茬。"他指了指对岸，"有人去了再也没回来，有人回来了却已经不是当年那个人。"\n\n我登上他的小船，河水轻轻拍打船舷。渡口在身后渐渐变小，对岸的轮廓却越来越清晰。这一刻，我忽然明白了什么叫"此岸"与"彼岸"……'
-                },
+        function showCopyToast() {
+            toast.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
 
-                // ===== 散文 (prose) =====
-                {
-                    id: 'prose-001',
-                    category: '散文',
-                    title: '夏日蝉鸣',
-                    date: '2026-07-10',
-                    cover: 'https://picsum.photos/seed/prose-cicada/400/280',
-                    summary: '蝉声如潮的午后，我坐在老屋的廊下，想起了许多遥远的夏天。',
-                    content: '【待替换】\n\n蝉声从四面八方涌来，像一张巨大的网，将整个午后笼罩其中。老屋的廊下阴凉而安静，我坐在藤椅上，看院子里的石榴树在微风中轻轻摆动。\n\n小时候的夏天似乎更长一些。那时候没有空调，只有蒲扇和西瓜，还有祖母摇着扇子讲的古老故事。蝉声也是这样响着，响着响着，一个夏天就过去了。如今蝉声依旧，只是听蝉的人已经变了模样。时光啊，它走得真快……'
-                },
-                {
-                    id: 'prose-002',
-                    category: '散文',
-                    title: '冬夜读书',
-                    date: '2026-01-15',
-                    cover: 'https://picsum.photos/seed/prose-winter/400/280',
-                    summary: '窗外飘着雪，屋内一盏灯，一本书，便是最好的冬夜。',
-                    content: '【待替换】\n\n雪下得很安静，一片一片落在窗台上，慢慢堆积。我把台灯调暗了一些，让光线刚好落在书页上。手边的茶已经凉了，但屋子里很暖和。\n\n在这样的夜晚读书，是一种奢侈的享受。世界被雪隔绝在外，只剩下文字在眼前流淌。偶尔抬头看窗外，雪花在昏黄的路灯下飞舞，像是另外一个世界的来信。这样的时刻，让人感到一种深沉的安宁……'
-                },
-                {
-                    id: 'prose-003',
-                    category: '散文',
-                    title: '春日小记',
-                    date: '2026-03-22',
-                    cover: 'https://picsum.photos/seed/prose-spring/400/280',
-                    summary: '路边的迎春花开了，春天来得悄无声息却又轰轰烈烈。',
-                    content: '【待替换】\n\n转过街角，一丛迎春花猝不及防地撞入眼帘。那种明亮的黄色，像是把所有冬天积攒的阳光都释放了出来。我停下脚步，看了很久。\n\n春天就是这样，它不会提前通知你，只是让一株花、一片新绿悄悄告诉你：我来了。然后你抬起头，发现整条街、整个城市都已经被春天占领。生命的力量，总是这样温柔而坚定……'
-                },
+        // 阻止复制
+        document.addEventListener('copy', function(e) {
+            e.preventDefault();
+            showCopyToast();
+        });
 
-                // ===== 随笔 (essay) =====
-                {
-                    id: 'essay-001',
-                    category: '随笔',
-                    title: '六月末尾',
-                    date: '2026-06-28',
-                    cover: 'https://picsum.photos/seed/essay-june/400/280',
-                    summary: '六月的最后几天，空气中弥漫着离别的味道，也藏着新的开始。',
-                    content: '【待替换】\n\n六月末尾的傍晚，天空呈现出一种奇妙的颜色——介于粉紫与橙黄之间。我走在熟悉的街道上，两旁的梧桐树已经枝繁叶茂。\n\n每到这个时节，总会想起毕业、告别、启程这些词汇。但六月不仅仅是结束，它也是盛夏的开端，是一切蓬勃生长的起点。就像这漫天的晚霞，既是白昼的谢幕，也是夜晚的序章。人生中许多重要的转折，都发生在这样看似平常的黄昏里……'
-                },
-                {
-                    id: 'essay-002',
-                    category: '随笔',
-                    title: '关于时间',
-                    date: '2026-05-05',
-                    cover: 'https://picsum.photos/seed/essay-time/400/280',
-                    summary: '时间是最公平的，也是最无情的。它给每个人同样的二十四小时，却带走了不同的东西。',
-                    content: '【待替换】\n\n坐在窗前发呆，看着秒针一格一格地跳动。时间就这样流走了，无声无息。有时候觉得一天很长，长到可以做很多事情；有时候又觉得一年很短，短到来不及好好告别。\n\n古人说"逝者如斯夫，不舍昼夜"，千年前的话放到今天依然准确。时间从来不会为谁停留，我们能做的，只是在它流过的痕迹里，留下一些值得回忆的东西。也许这就是写作的意义——用文字对抗遗忘……'
-                },
-                {
-                    id: 'essay-003',
-                    category: '随笔',
-                    title: '雨天杂感',
-                    date: '2026-04-18',
-                    cover: 'https://picsum.photos/seed/essay-rain/400/280',
-                    summary: '下雨天最适合胡思乱想，也最适合什么都不想。',
-                    content: '【待替换】\n\n雨打在玻璃上，发出细密的声响。我关掉了音乐，就这样听着雨声发呆。雨天有一种神奇的魔力，它让世界慢下来，也让思绪变得柔软。\n\n记得小时候特别喜欢踩水坑，每踩一下就会溅起小小的水花。现在路过水坑会绕着走，不是怕弄湿鞋子，而是少了那份不管不顾的心情。长大大概就是这样——学会了规避，也失去了许多简单的快乐。不过没关系，至少还有雨天，可以让人名正言顺地慢下来……'
-                },
+        // 阻止剪切
+        document.addEventListener('cut', function(e) {
+            e.preventDefault();
+            showCopyToast();
+        });
 
-                // ===== 博客 (blog) =====
-                {
-                    id: 'blog-001',
-                    category: '博客',
-                    title: '搭建这个网站的初衷',
-                    date: '2026-06-15',
-                    cover: 'https://picsum.photos/seed/blog-website/400/280',
-                    summary: '一直想拥有一个属于自己的安静角落，用来存放文字和思绪。',
-                    content: '【待替换】\n\n在这个社交媒体泛滥的时代，我反而越来越渴望一个安静的空间。没有算法推荐，没有点赞数，没有流量焦虑——只是一个单纯的、属于我自己的角落。\n\n这个网站就是这样的存在。它不需要取悦任何人，不需要迎合任何潮流。它只是我的一小片自留地，用来种植文字，收获宁静。希望偶然路过的你，也能在这里找到片刻的安宁。愿我们在喧嚣的世界里，都能保有一方清净之地……'
-                },
-                {
-                    id: 'blog-002',
-                    category: '博客',
-                    title: '推荐几本最近在读的书',
-                    date: '2026-05-30',
-                    cover: 'https://picsum.photos/seed/blog-books/400/280',
-                    summary: '分享几本陪伴我度过这个春天的好书，每一本都值得反复阅读。',
-                    content: '【待替换】\n\n这个春天读了几本很不错的书，想在这里记录一下。\n\n第一本是……（此处内容待替换为真实的读书笔记和推荐）。读书是一件很私人的事情，每个人的感受都不尽相同。但我始终相信，好书就像老朋友，总会在你需要的时候给你慰藉。如果你也有喜欢的书，欢迎在某个角落与我分享。文字的力量，在于它能够跨越时空，把素未谋面的人连接在一起……'
-                },
-                {
-                    id: 'blog-003',
-                    category: '博客',
-                    title: '学会慢下来',
-                    date: '2026-04-25',
-                    cover: 'https://picsum.photos/seed/blog-slow/400/280',
-                    summary: '在这个一切都讲究效率的时代，慢下来反而成了一种需要练习的能力。',
-                    content: '【待替换】\n\n最近在练习"慢下来"。不是懒惰，而是有意识地放慢节奏——慢慢吃饭，慢慢走路，慢慢读一本书。\n\n刚开始很不习惯，总觉得有什么事情在等着我去完成。但坚持了一段时间后，发现效率并没有降低，反而因为更专注而提高了。更重要的是，我开始重新注意到生活中那些被忽略的细节：早晨咖啡的香气、午后阳光的角度、傍晚窗外的鸟鸣。这些细小的事物，构成了生活真正的质感……'
-                },
+        // 阻止右键菜单（防止"另存为"、"复制图片"等）
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            showCopyToast();
+        });
 
-                // ===== 照片 (photo) =====
-                {
-                    id: 'photo-001',
-                    category: '照片',
-                    title: '雨后',
-                    date: '2026-07-08',
-                    cover: 'https://picsum.photos/seed/photo-rain/400/280',
-                    summary: '一场骤雨过后，城市的倒影在水中显得格外温柔。',
-                    content: '【待替换】\n\n（这组照片拍摄于七月的一场骤雨之后。）\n\n雨后的街道积着浅浅的水，倒映着天空和建筑。平日里熟悉的城市，在水影中变得陌生而美丽。我用相机捕捉了几个瞬间：一个孩子跳过水坑的刹那、一对老人在湿漉漉的长椅上并肩坐着、一只猫在屋檐下甩干身上的水珠。\n\n这些平常的场景，在雨水的洗礼后都带上了一层柔和的光晕。也许生活就是这样——偶尔需要一场雨，才能看清平日里忽略的美好……'
-                },
-                {
-                    id: 'photo-002',
-                    category: '照片',
-                    title: '故乡的田野',
-                    date: '2026-04-05',
-                    cover: 'https://picsum.photos/seed/photo-field/400/280',
-                    summary: '清明回乡，用镜头记录下了记忆中那片金色的油菜花田。',
-                    content: '【待替换】\n\n（清明时节回到故乡，田野里的油菜花开得正盛。）\n\n站在田埂上放眼望去，满眼都是金黄色，一直延伸到远处的山脚下。小时候觉得这片田野好大，大到可以装下整个童年。现在再看，它其实并不大，但它承载的记忆却比任何地方都要厚重。\n\n我用相机拍下了很多照片：蜜蜂在花间忙碌、风拂过花田掀起波浪、夕阳把一切都染成橘色。这些画面，是我送给自己的关于故乡的礼物……'
-                },
-                {
-                    id: 'photo-003',
-                    category: '照片',
-                    title: '城市剪影',
-                    date: '2026-03-15',
-                    cover: 'https://picsum.photos/seed/photo-skyline/400/280',
-                    summary: '黄昏时分，城市的天际线在暮色中勾勒出独特的轮廓。',
-                    content: '【待替换】\n\n（这组城市剪影拍摄于不同的黄昏。）\n\n我偏爱黄昏时分的城市。那时天还没有完全黑，灯光却已经亮起，建筑变成了深色的剪影，天空则是渐变的画布。每一扇亮着灯的窗户后面，都有一个故事在上演。\n\n摄影的奇妙之处在于，它能把流动的时间凝固成一个瞬间。而当我回看这些照片时，那些瞬间又重新流动起来，带着当时的温度和情绪……'
-                },
+        // 阻止 Ctrl+C / Ctrl+V / Ctrl+S / Ctrl+P / Ctrl+Shift+I（开发者工具）
+        document.addEventListener('keydown', function(e) {
+            // Ctrl+C / Ctrl+V / Ctrl+S / Ctrl+P / Ctrl+U
+            if (e.ctrlKey && (e.key === 'c' || e.key === 'C' || 
+                              e.key === 'v' || e.key === 'V' ||
+                              e.key === 's' || e.key === 'S' ||
+                              e.key === 'p' || e.key === 'P' ||
+                              e.key === 'u' || e.key === 'U')) {
+                e.preventDefault();
+                showCopyToast();
+                return false;
+            }
+            // F12 开发者工具
+            if (e.key === 'F12') {
+                e.preventDefault();
+                showCopyToast();
+                return false;
+            }
+            // Ctrl+Shift+I 开发者工具
+            if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i')) {
+                e.preventDefault();
+                showCopyToast();
+                return false;
+            }
+        });
 
-                // ===== 情绪 (mood) =====
-                {
-                    id: 'mood-001',
-                    category: '情绪',
-                    title: '情绪日记·其三',
-                    date: '2026-06-20',
-                    cover: 'https://picsum.photos/seed/mood-diary3/400/280',
-                    summary: '最近的情绪像天气一样多变，时而晴朗，时而阴雨。记录下来，也是一种自我疗愈。',
-                    content: '【待替换】\n\n今天醒来的时候，莫名感到一阵低落。窗外阳光很好，但心里却像蒙了一层雾。\n\n我没有强迫自己振作起来，而是允许自己就这样低沉着。泡了一杯热茶，坐在窗前发呆。慢慢地，那片雾似乎薄了一些。我发现，当我不再对抗情绪，而是安静地观察它时，它反而没有那么沉重了。\n\n也许情绪不需要被"解决"，它只需要被看见、被接纳。就像天气一样，阴天过后，阳光总会回来的……'
-                },
-                {
-                    id: 'mood-002',
-                    category: '情绪',
-                    title: '小确幸清单',
-                    date: '2026-05-12',
-                    cover: 'https://picsum.photos/seed/mood-happy/400/280',
-                    summary: '列出那些让我感到微小而确定的幸福瞬间。',
-                    content: '【待替换】\n\n今天想记录一些让我感到幸福的小事：\n\n1. 早晨第一杯咖啡的香气。\n2. 路边一只主动蹭过来的流浪猫。\n3. 收到一封来自老友的手写信。\n4. 傍晚天空出现了一道淡淡的彩虹。\n5. 睡前读到了一句打动我的诗。\n\n这些瞬间都很微小，但把它们收集起来，就像在口袋里装满了糖果。在需要的时候拿出一颗，就能甜很久。我想这就是所谓的"小确幸"——不需要多么宏大的理由，只是生活中那些不经意的温柔……'
-                },
-                {
-                    id: 'mood-003',
-                    category: '情绪',
-                    title: '给未来的自己',
-                    date: '2026-02-14',
-                    cover: 'https://picsum.photos/seed/mood-future/400/280',
-                    summary: '写一封短信给一年后的自己，不知道那时候再看会是什么心情。',
-                    content: '【待替换】\n\n亲爱的未来的我：\n\n当你读到这封信的时候，已经过去一年了。现在的你还好吗？那些让你焦虑的事情，是不是已经解决了？那些让你开心的事情，还记得吗？\n\n我想对你说，无论这一年发生了什么，都请记得：你已经做得很好了。不必对自己太苛刻，也不必总是和别人比较。你就是你，独一无二的你。\n\n希望一年后的你，依然保持着对世界的好奇心，依然愿意用文字记录生活。我们在时间里相遇，又在时间里告别。愿你一切安好……'
-                },
-                {
-                    id: 'mood-004',
-                    category: '情绪',
-                    title: '秋夜独白',
-                    date: '2025-11-08',
-                    cover: 'https://picsum.photos/seed/mood-autumn/400/280',
-                    summary: '一个普通的秋夜，一些普通的思绪。',
-                    content: '【待替换】\n\n秋天的夜晚总是格外安静。窗外的风声像一首低沉的曲子，断断续续地演奏着。\n\n我喜欢这样的夜晚，可以什么都不做，只是静静地坐着，让思绪自由飘荡。有时候会想起一些很久以前的事情，有时候会想象一些还未发生的事情。这些念头来了又走，像窗外的落叶一样。\n\n也许孤独并不是一件坏事，它让人有机会与自己对话。在这个喧闹的世界里，能够安静地陪伴自己，也是一种珍贵的能力……'
+        // 阻止图片拖拽保存
+        document.addEventListener('dragstart', function(e) {
+            if (e.target.tagName === 'IMG') {
+                e.preventDefault();
+                showCopyToast();
+            }
+        });
+
+        // 阻止截图快捷键（PrintScreen 无法完全阻止，但我们可以监听 keyup）
+        document.addEventListener('keyup', function(e) {
+            if (e.key === 'PrintScreen') {
+                showCopyToast();
+                // 尝试清空剪贴板（部分浏览器支持）
+                try {
+                    navigator.clipboard.writeText('').catch(() => {});
+                } catch(err) {}
+            }
+        });
+
+        // ===== 原有交互逻辑 =====
+        // 滚动条宽度
+        const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+        document.documentElement.style.setProperty('--scrollbar-width', scrollbarWidth + 'px');
+
+        // 导航栏
+        const nav = document.getElementById('mainNav');
+        window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 30); }, { passive: true });
+
+        const hamburger = document.getElementById('hamburgerBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+        });
+        document.querySelectorAll('#mobileMenu a').forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('active');
+                mobileMenu.classList.remove('active');
+            });
+        });
+
+        // 覆盖层控制
+        const allOverlays = document.querySelectorAll('.overlay');
+        let scrollPos = 0;
+        function openOverlay(id) {
+            const overlay = document.getElementById(id);
+            if (!overlay) return;
+            scrollPos = window.scrollY;
+            document.body.classList.add('overlay-open');
+            document.body.style.top = -scrollPos + 'px';
+            overlay.classList.add('active');
+            resetOverlayToFirstLayer(overlay);
+        }
+        function closeOverlay(overlay) {
+            overlay.classList.remove('active');
+            document.body.classList.remove('overlay-open');
+            document.body.style.top = '';
+            window.scrollTo(0, scrollPos);
+        }
+        function resetOverlayToFirstLayer(overlay) {
+            const listViews = overlay.querySelectorAll('.list-view');
+            const detailViews = overlay.querySelectorAll('.detail-view');
+            listViews.forEach(lv => lv.classList.remove('hidden'));
+            detailViews.forEach(dv => dv.classList.remove('active'));
+        }
+
+        document.querySelectorAll('[data-overlay]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                openOverlay(btn.dataset.overlay);
+            });
+        });
+        document.querySelectorAll('.overlay-close').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const overlay = btn.closest('.overlay');
+                if (overlay) closeOverlay(overlay);
+            });
+        });
+        allOverlays.forEach(overlay => {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) closeOverlay(overlay);
+            });
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const lightbox = document.getElementById('lightbox');
+                if (lightbox.classList.contains('active')) { closeLightbox(); return; }
+                allOverlays.forEach(o => { if (o.classList.contains('active')) closeOverlay(o); });
+            }
+        });
+
+        // ====== 小说31章预览数据 ======
+        const chapters = [
+            { title: '第一章：心口上的洞', preview: '那年盛夏，方旭爱上了一个让他一生都在怀念的少年。\n我自以为爱能跨越时间长河让我们彼此共白头，却不料爱无法跨越新鲜感与移情别恋。\n他人的爱当真是世界上最为脆弱且无用的东西，世间情爱诸多，这些爱最终会化作一把极其坚硬的匕首刺向我们的心，当你陷入这爱之深处时，所受的伤害便是你投入程度的数倍。\n我坚信所有的他爱都无比脆弱，唯有自爱才最为坚硬且不会刺向自己。\n"哥，至此一别，再见是何时？"\n"小学霸，你说话能不能不那么文绉绉的？"\n方旭笑着捏了捏阮倦的脸，笑道："待到荷花争渡时。"' },
+            { title: '第二章：那段甜蜜的起点', preview: '方旭思绪回到了24年的那个晚上。\n他独自在教室里看书，阮笙画到来时，他听见了她和另一个同学的谈话。\n阮笙画笑着："我们这个假期打算去特呈岛玩。"\n"什么，特呈岛？"杜若茵激动道，"我家就在那岛上。"\n听到两人的谈话，阮倦抬起头看向那边。他早已无心看书，起身径直走到两人身边，问道："你们五一要去哪玩呀？"\n阮笙画笑道："我们打算去特呈岛玩呀。"\n"你和谁去呀？"方旭问道。\n"我闺蜜和我弟。"\n方旭笑着点了点头："好，有机会一起去玩，我在家快发霉了，想出去走走。"' },
+            { title: '第三章：我们的婚礼', preview: '众人吃完早餐后便挑起了衣服，两人试过了很多套衣服后方旭选了一身白色的服装，而他身旁的阮倦则选了一套纯黑色的衣服，阮倦率先换好衣服便去化妆簪花了，而一边的方旭还在排着队，他看着镜子里折射出阮倦的脸，他笑着拿起手机拍着，他眼含爱意静静地看着他的眼睛。\n阮倦似乎感应到什么似的笑着看向镜子里的方旭，两人的目光在镜子里对视，嘴角同时上扬着，方旭就这样呆呆地看着阮倦。\n阮倦并非没有吸引方旭的地方，但方旭像是着了魔般的喜欢着一脸纯真的阮倦，这可能就是方旭苦苦等待的"感觉"吧。' },
+            { title: '第四章：一吻定终情', preview: '众人吃过东西时，时间转瞬即逝，一眨眼时间便来到了夜里两点多钟，阮倦大姐走到房间门口看着屋子里的阮倦道："阮倦，你和你朋友一起下去看看还有没有药店开门，谢惊鸿发高烧了。"\n阮倦点了点头，方旭起身跟着阮倦走下了楼，两人在楼下走了一圈，没见到哪家药店是开门的，两人又折返回家里，阮倦大姐听到两人进门的动静从房间里走了出来，"有吗？"\n阮倦摇着头道："没有哦。"' },
+            { title: '第五章：手链', preview: '两人又迎来了别离，在学校的方旭内心深处总会激起一滩涟漪，他对阮倦的爱如滔滔洪水不可断绝。\n"老公，我给你买了个东西，你回家的时候去拿一下哦。"\n方旭此时还坐在教室里上着课，讲台上语文老师贺兰山正在讲着《氓》，"士之耽兮，犹可说也。女之耽兮，不可说也。"\n手机在方旭的抽屉里震动着，方旭眼睛盯着贺兰山，手却在抽屉里面摸索着，他摸到手机后将其缓缓地拿到了自己的腹部，他抬起大腿遮挡住手机，避免走廊窗户方向的视线，他用眼神瞟着手机。' },
+            { title: '第六章：我想要的爱是那束花般不会枯萎的爱', preview: '阮倦竟从书包里面拿出了一束花，方旭瞠目结舌的看着他将花递到了自己的眼前，他的手紧紧握着拳震惊的说不出话，"这是？"\n阮倦笑着，眼神带着爱意，看着方旭，语气轻柔地说道："这个是我送给你的花。"\n方旭嘴角上扬着，"这...这个花是给我的？"他带着疑惑的语气道。\n阮倦重重的点着头，"你不是说你不喜欢真花吗，这个花不会枯萎。"他眼神坚定的看着方旭道。\n"这个是你自己做的吗宝宝？"方旭问道。\n阮倦骄傲地点着头，脸上洋溢着笑容，"是呢，我自己亲手做的哦。"' },
+            { title: '第七章：海湾大桥下藏着秘密', preview: '阮倦带着方旭来到了海湾大桥下，方旭笑着问道，"老婆，这是哪里呀？"\n阮倦笑道，"我也不知道，听说这里是一个打卡点。"\n方旭点了点头道，"好哦。"\n两人并肩穿过马路，走到礁石边，又跨过礁石来到沙滩上，两人朝海水走去，停靠在沙滩上看着沙滩上的小鱼小蟹在那乱窜着，阮倦蹲了下来看着，方旭笑着蹲到他身边，看着阮倦，"宝宝，在看什么呢？"\n阮倦笑着用手指了指着地上凸起的洞，洞的周围堆着沙子，"这个里面有螃蟹。"' },
+            { title: '第八章：面具之下的丑态', preview: '我们总被温馨的家庭氛围所蒙蔽，对其中暗藏的利刃视而不见，总以为有些家庭和睦是一直如此，却不料这深处埋藏着一颗更深更大的雷。\n当面具脱下时你我才能看清面具之下是怎样的肮脏。\n门外传来争吵声，方旭将自己手机的音量调到最高，阮倦看着方旭的脸，"怎么啦？"\n方旭笑着摇着头，"没事。"\n阮倦似乎听到了些什么，他看着方旭道，"你在这里待着，我去外面看看。"\n方旭点了点头，将手机的音量调小，"好，那我在这里等你。"' },
+            { title: '第九章：谎言', preview: '你把承诺当玩笑，我却当了真。\n回到学校后的方旭给阮倦发去了一个报备视频，方旭笑着嘟着嘴，"我到学校啦。"\n"好呢，到学校就好哦，还有一小段路我也到学校啦。"\n"好呢，到学校给我发信息哦。"\n"好呢。"\n方旭拿着手机笑着，他回到宿舍后笑着盯着屏幕里两人的聊天框，此时的阮倦发来一张他坐在宿舍椅子的图片，方旭举起手机将自己坐在床上的照片发了过去，"我在宿舍里坐着哦，一会就去上晚自习啦。"' },
+            { title: '第十章：带着苦涩的真心话', preview: '方旭看着阮倦的脸，"怎么啦？"\n阮倦靠在方旭胸口上道，"我可能一会就要回家了。"\n"啊，为什么呀，你才刚刚过来。"\n"因为哥哥姐姐他们一会就回来了，下午就到湛江了。"\n方旭捏着他的脸道，"那你下午是不是就要回去了？"\n阮倦无奈地点了点头，"是呀。"他语气郁闷道。\n方旭抚摸着他的头，"抱抱你"，随即将阮倦紧紧地抱住。\n阮倦抬起头，满脸委屈巴巴地看着方旭道："我明天晚上就要回老家啦，我们要很多天都没办法见面了。"' },
+            { title: '第十一章：金屋藏娇', preview: '两人笑着，笑着笑着又哭了，"我想你了宝宝。"阮倦用着委屈巴巴的语气开口道。\n"我也想你了。"\n"我想你过来陪我。"\n方旭思考着犹豫着，"我也想过去陪你哦，但是哥哥姐姐不是都在呢吗？"\n"是呢，但我现在就是很想你，很想很想你！"阮倦平静地脸上又泛起些许涟漪，他的泪一滴又一滴地滑落，方旭看着内心极其难受。\n方旭思虑再三后决定去找阮倦，他不忍看到阮倦独自流泪的模样，也不愿接受他内心深爱的人受到任何委屈，"那我等哥哥姐姐走之后我就去找你？"方旭用着试探的语气道。' },
+            { title: '第十二章：矛盾', preview: '阮倦父母回来前两天两人还闹起了矛盾，那时的两人因为一件很小的事起了争执。\n那时已是深夜，阮倦躺在床上背对着方旭，方旭则坐在床边抚摸着阮倦的手。\n"你为什么不亲我？为什么总是不愿意在别人面前和我贴贴？你是不是根本就不爱我？"\n方旭牵着阮倦的手，却被阮倦一把将他的手甩开，"我不是不想当着他们的面搞暧昧，只是他们还是小孩子，我们总不能当着那群小孩子的面亲亲吧？"\n"哦，你也知道他们是小孩子啊？"阮倦没好脾气地回道。' },
+            { title: '第十三章：你我苦难生活里安慰剂', preview: '一个暑假的时间两人时常见面，可见面的日子总是过得很快，方旭率先迎来开学，而阮倦还在家中等待着。\n方旭的学校重新编排了宿舍，他被分到了其他班的宿舍里，那个宿舍里全是其他班的同学，只有一个和他玩得不太好的同学与他同住，方旭住进混宿后，看着那群与自己不熟悉的人，委屈感从内心喷涌而出。\n那段日子，方旭时常落泪，他常坐在床上靠着墙听着床帘外的嘈杂，一个人躲在床帘里哭泣着。' },
+            { title: '第十四章：跨年', preview: '时间过得很快，一年隔着一年悄无声息，当你回神时一切都已过去，在24年最后的一天两人都回了家，方旭笑着给阮倦发去了信息，"宝宝，今年跨年你要和谁一起过呀？"\n"我可能和家里人去外面逛一下哦。"\n"好哦。"\n"那你呢？"\n"我可能在家里躺着吧。"\n"好吧。"\n"你要过来找我玩吗？"阮倦笑着问道。\n"我也想去找你，但是哥哥姐姐他们在家，住不下。"' },
+            { title: '第十五章：新年', preview: '年关将近时方旭还待在阮倦的家中，"还有几天就要过年了，我要回家搞卫生啦。"方旭抱着阮倦道。\n阮倦躺在方旭的怀里侧抬着头看着他道，"啊，那你什么时候回去呀？"\n"今天下午吧。"\n阮倦拿起手机看着时间已经是下午的一点多钟了，"现在都一点多钟了，那你不是一会吃完饭就回去了？"\n方旭点了点头，"是吧，吃完饭就回去了。"\n阮倦的眼睛里打转着泪花，"我不想你那么快离开我。"' },
+            { title: '第十六章：前夜', preview: '为什么幸福的日子总是那么短暂，为什么相逢一场又要迎接新的离别，是不是所有遇见的结局都是离开，是不是所有的离开都伴随着思念，当思念消逝的时候那个曾日思夜想的人，是不是就在我们的世界里迎来死亡？\n一场离别又在两人相逢时埋下。\n"你什么时候去实习呀？"阮倦红着眼睛看着方旭道。\n"我呀，我2月6号就要上去广州了。"方旭拿着手机看屏幕里的阮倦道。\n"那现在已经2月4号了，我们见面的日子就只有一天了。"' },
+            { title: '第十七章：离别', preview: '天空逐渐暗了下来，阮倦坐在方旭的后座，小电驴在小城市里穿梭着，直到车停到了一架火锅店门前，阮倦跟着方旭的步伐走到了店，他用手示意着阮倦找位置坐下，阮倦坐下后起身朝着收银台走去，他站在收银台前拿着手机上买的团购券道，"您好，我在团购买了你们家的券，帮我验一下。"\n阮倦坐在一旁看着方旭，方旭时不时也会笑着看向阮倦。' },
+            { title: '第十八章：进厂', preview: '你是我除开家人最爱的一个人，或许我对你爱的比对我父母都深，爱你也超过了爱我。\n寂静的卧室里传来阮倦和方旭的对话声，"我想你了。"\n"我也好想你，我感觉我们分开好久似的。"阮倦红着眼睛沙哑地开口道。\n"我也是，我感觉我们两个像是分开好几十天似的。"\n"是呀，我都不知道我们下次见面是什么时候呢，我好想你，我又想去找你了。"\n方旭看着屏幕里的阮倦侧躺着，眼泪一点点滑落着，"傻瓜，我相信我们下次见面会很快的。"' },
+            { title: '第十九章：回乡', preview: '方旭在工厂与老师周旋了几天终于离职，那个上午他站在宿舍门口看向厂区的方向，摇着头笑了笑，"再见了，我想我再也不会来到这里了。"\n他提着行李走向一公里外的地铁站，先坐地铁前往嘉禾望岗，又从嘉禾望岗转车到了广州南站，那时的他年少气盛，来得匆匆，走得也匆匆，他没能好好看看这座城市的繁华，也没留下些什么。\n他坐在地铁上木讷地看向窗外，窗外的景色如同自己家乡似的，那些地方都不如市里繁华，他内心既开心又落寞，他感到困倦但又不想离开这座城市，可能是思念太过沉重压得方旭喘不过气，又或许是他太矫情，受不了社会的苦。' },
+            { title: '第二十章：乡愁', preview: '我的家乡生活着一个和我没血缘关系的爱人，是他让我对家乡产生了浓厚的乡愁。\n阮倦躺在方旭的怀里笑着，方旭总喜欢用手搂着阮倦那细腰，"你这次回来还去工作吗？"\n方旭摇着头道，"我可能不会去了吧。"\n阮倦笑着看着方旭的眼，"真的吗？"\n方旭脑子里浮现出上次回来时与方呈的聊天记录，"你要不要来我这里工作？"\n"干什么的？"\n"视频剪辑。"' },
+            { title: '第二十一章：大吵一架', preview: '他用与我大吵的方式来惹我生气，只为让我归乡，为的是百公里一面。\n方旭在广州待了20多天后便收到了第一个月的工资，三月份他在公司只上了七天班，他一共收到了七百块钱，晚上他笑着回到家后便被方呈索要了500块钱，方旭是极其不情愿的，后来他想了想方呈是和他对象住在一起的，便无奈地将钱给他转了过去。\n那晚之后他便得知了自己每个月发工资都要给方呈发去一千元作为生活费，可方旭每个月的工资才三千元，方旭内心极其痛苦，他多么想逃离那里。' },
+            { title: '第二十二章：纪念日', preview: '两人终于熬过那段日子，方旭迎来了假期。他下班后去吃了饭，饭后本想在路边买束花带给阮倦，可惜当时正坐着方呈的车去地铁站，没能实现这个想法。\n方旭上了地铁后过了一个小时便来到了南站，方旭看着那熟悉又陌生的车站笑了笑，心里想着："我什么时候才能真的再次来到这里，回到那个有爱人的地方？"他明白这次回乡无法消除对家乡的乡愁，也知道两人见面后思念只会愈发浓烈。\n方旭到南站后便找了个位置坐了下来，他笑着看着时间，只希望时间能过得快些，此时离列车出发还有一个多小时，他就坐在椅子上，盯着指针倒数着两人见面的时间。' },
+            { title: '第二十三章：归乡消乡愁', preview: '再漫长的相见都会迎来离别，更何况两人相见只有短短两天。\n方旭再次踏上了前往广州的列车，阮倦被遗弃在了家乡，两人总以为再次相见会是很久以后的某一天，却不料再次见面会如此短暂。\n自从方旭从湛江回到广州后他的乡愁愈发浓烈，那乡愁像是长出了翅膀，一直牵动着方旭飞回故乡的心。\n方旭下了车站又赶着走上了地铁，此时地铁里人挤人地站着，方旭背着一个包手上还提着从家里带上来的特产，那特产的沉重让方旭提着的手通红，那种委屈感油然而生。' },
+            { title: '第二十四章：驾照', preview: '方旭在家里待了太久太久，可他总觉得自己在家有很多事情需要做，可当局者迷，方旭辞职回家后，便被廖萍与方怀瑾轮番劝着去练车，方旭无奈只能点头，于是两人见面的事因练车被耽搁了好长一段时间。\n六月份，阮倦放了暑假，方旭刚考完科目一，驾照进度却卡在科目二，科目二的学时压得他喘不过气，他近乎每天都要去驾校打卡，直到他准备考试时，又因台风阻隔无法完成科目二的考试。\n那天方旭驱车几十里来到了湛江，两人见面的第一天便在房间里大吵了一架，只因为两人下个星期无法见面。' },
+            { title: '第二十五章：争吵', preview: '那时阮倦与方旭刚回到湛江，阮笙画在得知阮倦回到小镇后，才从阮倦口中得知阮倦大姐又来找阮笙画了，方旭与阮笙画处境相同，阮笙画明白方旭为阮倦家里的事焦虑的心情，她也深知两人的故事应该避嫌，但阮倦似乎从来不会在意。\n方旭得知阮倦大姐找阮笙画聊天时，他已经回家，方旭给阮笙画发去了信息，"他大姐找你了？"\n"对，他大姐还叫我不要告诉你们听。"\n"他大姐怎么找你的？"\n"就是我那天上来广州后的那个晚上他大姐给我打电话，问了你是不是男同那些。"' },
+            { title: '第二十六章：开学', preview: '两人的感情早就出现了裂痕，可是彼此都选择沉默与漠视，是当初付出的太多了吗，导致两人都不愿轻易地放弃彼此？你们当真是傻得可怜，宁愿相互折磨也不愿分开，宁愿相互漠视裂痕只字不提也不愿挑明解决问题。\n分开的种子早就种下，只是那棵大树还未长成，而一棵树需要水的滋养才能成长为参天大树。\n争吵和漠视便是那最好的滋养品。\n阮倦率先迎来了开学，方旭看着阮倦去了学校，他一个人在家等待着阮倦的假期。' },
+            { title: '第二十七章：台风天——海湾大桥上的誓言', preview: '方旭在学校度过了十多天，这段日子里，阮倦总会和他打着视频。虽说偶尔也会争执吵闹，但两人依旧满心期待着假期的到来——国庆。\n方旭笑着坐上前往湛江的高铁，列车很快抵达湛江西站。方旭先回了家，到家后，笑着给阮倦发去报备视频："宝宝，我到湛江啦。"\n"好呢好呢。"阮倦笑着回复，"你什么时候过来找我呀？"\n"我明天一早就过去找你哦。"方旭回道。\n"那你今天晚上不能过来吗？"\n方旭想了想："你等等我。"' },
+            { title: '第二十八章：余烬', preview: '我自以为早已放下了曾经的爱人，却不料再次收到他的来信时，埋没在心底的爱与理智竟会如此剧烈，这突如其来的消息也打破了方旭平静的生活。\n那天是个极其普通的午后，方旭在梦里多次地梦见了阮倦，他梦见阮倦突如其来地给他发来了消息，当他睁开眼时却不料这美梦竟成真。\n方旭迷迷糊糊地睁开眼，他随手在枕头底下摸索手机，他拿起手机看到那熟悉的电话号码，迷糊的脑子瞬间清醒。\n方旭打开了手机看到了那条完整的信息，"你下个星期回家吗？""我想和你见个面。"' },
+            { title: '第二十九章：终章', preview: '每个故事都有终章，你我只不过是萍水相逢。未来我会走我想走的路，谢谢你的出现，教会了我很多东西，只愿我的未来里不会再出现你。\n方旭说完这句话后再也控制不住那压抑已久的情绪，情绪如滔滔洪水般倾泻而出，他压抑已久的声音逐渐变大，他抬起手臂狠狠咬下，他想通过身体的痛来压抑自己那不受控制的情绪，他的眼泪如豆珠般滑落，他抬着头大口地呼气和吐气，他不想也不能让他人知道他此刻是哭泣的。\n很快耳机里传来阮倦的声音，"删了就删了，我也早就把我们那些照片给删了。"' },
+            { title: '第三十章：家有余温', preview: '他强忍着泪水与心里的酸涩回了家，车停在阮倦时常下车的地方，他下车后背起书包走回了家，到家门口时他停下脚步背着身对着墙，他大口吐着气朝房子边的过道走去，廖萍独自一个人站在那切着喂鸡的菜。\n"妈，我回来啦。"方旭的声音沙哑，他的鼻音很重很重。\n"你回来啦？"廖萍脸上洋溢着笑。\n方旭看着母亲那张温柔的脸，头瞬间低了下去，"回来了。"\n"不是你爸去接你吗？"\n"我看打车有优惠就直接打车回来了。"' },
+            { title: '第三十一章：真相', preview: '方旭在床上半梦半醒，再次睁开眼睛时窗外的世界已变得亮堂堂，他睁开眼睛着急忙慌地找起手机，他打开手机，看着给阮倦发的长文，竟一条消息也没有，他低垂着头走了出去，他掀开盖在餐桌上的不锈钢罩看到了桌子上竟然多了一只白切鸡。\n他回想到昨天回来时与母亲聊天时的场景。\n方旭吃完饭回到房间坐了一会，便被廖萍的声音叫了过去，他出了门看见站在餐桌边上的廖萍，廖萍看着方旭笑道，"你吃饱了吗？"\n"我吃饱了，"方旭笑着开口道。' }
+        ];
+
+        // 生成小说章节
+        const chapterList = document.getElementById('chapterList');
+        const chapterContainer = document.getElementById('chapterContainer');
+        chapters.forEach((ch, index) => {
+            const item = document.createElement('div');
+            item.className = 'chapter-item';
+            item.dataset.chapter = `荒凉如梦-第${String(index+1).padStart(2,'0')}章`;
+            item.innerHTML = `<span class="chapter-num">${index+1}</span><div class="chapter-info"><h4>${ch.title}</h4><p>${ch.preview.substring(0,30)}...</p></div>`;
+            chapterList.appendChild(item);
+
+            const div = document.createElement('div');
+            div.className = 'detail-view chapter-content';
+            div.id = `chapterContent-荒凉如梦-第${String(index+1).padStart(2,'0')}章`;
+            div.innerHTML = `
+                <button class="back-btn" data-back="bookDetail-荒凉如梦">返回目录</button>
+                <div class="article-full">
+                    <h2>${ch.title}</h2>
+                    ${ch.preview.split('\n').map(p => `<p>${p}</p>`).join('')}
+                    <div class="full-text-guide">📖 因技术原因无法展示全文，想看全文请到微信公众号搜索 <strong>“木千余”</strong>。</div>
+                </div>
+            `;
+            chapterContainer.appendChild(div);
+        });
+
+        // 小说导航
+        const novelsBody = document.getElementById('novelsBody');
+        const novelsList = document.getElementById('novelsList');
+        const bookDetail = document.getElementById('bookDetail-荒凉如梦');
+        const allDetailViews = novelsBody.querySelectorAll('.detail-view');
+        const allBackBtns = novelsBody.querySelectorAll('.back-btn');
+        const chapterItems = novelsBody.querySelectorAll('.chapter-item');
+
+        function showNovelsList() {
+            novelsList.classList.remove('hidden');
+            allDetailViews.forEach(dv => dv.classList.remove('active'));
+        }
+
+        document.querySelector('.card[data-book="荒凉如梦"]').addEventListener('click', () => {
+            novelsList.classList.add('hidden');
+            allDetailViews.forEach(dv => dv.classList.remove('active'));
+            bookDetail.classList.add('active');
+            novelsBody.scrollTop = 0;
+        });
+
+        chapterItems.forEach((item, idx) => {
+            item.addEventListener('click', () => {
+                const targetId = `chapterContent-荒凉如梦-第${String(idx+1).padStart(2,'0')}章`;
+                const target = document.getElementById(targetId);
+                if (target) {
+                    allDetailViews.forEach(dv => dv.classList.remove('active'));
+                    target.classList.add('active');
+                    novelsBody.scrollTop = 0;
                 }
-            ];
+            });
+        });
 
-            // ==================== 分类配置 ====================
-            const CATEGORY_CONFIG = {
-                '小说': { icon: '📖', accent: '#c97d60', bg: '#fdf6f3' },
-                '散文': { icon: '✍️', accent: '#b8936e', bg: '#fdfaf5' },
-                '随笔': { icon: '💭', accent: '#7a9a7e', bg: '#f5faf7' },
-                '博客': { icon: '📝', accent: '#6b8a9e', bg: '#f5f8fb' },
-                '照片': { icon: '📷', accent: '#8b7aa0', bg: '#f8f6fb' },
-                '情绪': { icon: '🌸', accent: '#c47d8b', bg: '#fdf5f8' },
-            };
-
-            const CATEGORY_ORDER = ['小说', '散文', '随笔', '博客', '照片', '情绪'];
-
-            // ==================== 工具函数 ====================
-            function isWithin30Days(dateStr) {
-                const now = new Date('2026-07-14'); // 以当前日期为基准
-                const target = new Date(dateStr);
-                const diffMs = now - target;
-                const diffDays = diffMs / (1000 * 60 * 60 * 24);
-                return diffDays >= 0 && diffDays <= 30;
-            }
-
-            function getRecentWorks() {
-                return WORKS_DATA.filter(w => isWithin30Days(w.date))
-                    .sort((a, b) => new Date(b.date) - new Date(a.date));
-            }
-
-            function getWorksByCategory(category) {
-                return WORKS_DATA.filter(w => w.category === category)
-                    .sort((a, b) => new Date(b.date) - new Date(a.date));
-            }
-
-            function getWorkById(id) {
-                return WORKS_DATA.find(w => w.id === id);
-            }
-
-            function formatDate(dateStr) {
-                const d = new Date(dateStr);
-                const year = d.getFullYear();
-                const month = String(d.getMonth() + 1).padStart(2, '0');
-                const day = String(d.getDate()).padStart(2, '0');
-                return `${year}年${month}月${day}日`;
-            }
-
-            function formatDateShort(dateStr) {
-                const d = new Date(dateStr);
-                return `${d.getMonth() + 1}月${d.getDate()}日`;
-            }
-
-            // ==================== DOM引用 ====================
-            const mainContent = document.getElementById('mainContent');
-            const sidebarRecentList = document.getElementById('sidebarRecentList');
-            const mobileRecentList = document.getElementById('mobileRecentList');
-            const mobileRecentPanel = document.getElementById('mobileRecentPanel');
-            const mobileRecentOverlay = document.getElementById('mobileRecentOverlay');
-            const mtRecentBtn = document.getElementById('mtRecentBtn');
-            const sidebar = document.getElementById('sidebar');
-            const mobileTopbar = document.getElementById('mobileTopbar');
-
-            // ==================== 渲染最近发布 ====================
-            function renderRecentWorks() {
-                const recentWorks = getRecentWorks();
-                const renderList = (container, isMobile = false) => {
-                    if (!container) return;
-                    if (recentWorks.length === 0) {
-                        container.innerHTML =
-                            '<li class="sidebar-recent-empty" style="list-style:none;">近30天内暂无发布</li>';
-                        return;
-                    }
-                    const items = recentWorks.map(w => {
-                        if (isMobile) {
-                            return `
-                            <div class="mrp-item" data-work-id="${w.id}" onclick="window._navigateToDetail('${w.id}')">
-                                ${w.title}
-                                <span class="mrp-date">${formatDateShort(w.date)} · ${w.category}</span>
-                            </div>`;
-                        }
-                        return `
-                        <li class="sidebar-recent-item" data-work-id="${w.id}" onclick="window._navigateToDetail('${w.id}')">
-                            ${w.title}
-                            <span class="recent-date">${formatDateShort(w.date)} · ${w.category}</span>
-                        </li>`;
-                    }).join('');
-                    container.innerHTML = items;
-                };
-
-                renderList(sidebarRecentList, false);
-                renderList(mobileRecentList, true);
-            }
-
-            // 暴露到全局以便onclick使用
-            window._navigateToDetail = function(workId) {
-                navigateToDetail(workId);
-                // 关闭移动端面板
-                closeMobileRecentPanel();
-            };
-
-            // ==================== 移动端最近发布面板 ====================
-            function openMobileRecentPanel() {
-                mobileRecentPanel.classList.add('open');
-                mobileRecentOverlay.classList.add('open');
-                mtRecentBtn.textContent = '最新 ▴';
-                document.body.style.overflow = 'hidden';
-            }
-
-            function closeMobileRecentPanel() {
-                mobileRecentPanel.classList.remove('open');
-                mobileRecentOverlay.classList.remove('open');
-                mtRecentBtn.textContent = '最新 ▾';
-                document.body.style.overflow = '';
-            }
-
-            mtRecentBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                if (mobileRecentPanel.classList.contains('open')) {
-                    closeMobileRecentPanel();
+        allBackBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetId = btn.dataset.back;
+                if (!targetId) return;
+                allDetailViews.forEach(dv => dv.classList.remove('active'));
+                if (targetId === 'novelsList') {
+                    novelsList.classList.remove('hidden');
                 } else {
-                    openMobileRecentPanel();
+                    novelsList.classList.add('hidden');
+                    const target = document.getElementById(targetId);
+                    if (target) target.classList.add('active');
                 }
+                novelsBody.scrollTop = 0;
+            });
+        });
+
+        // 通用：列表→详情（散文、随笔）
+        function setupDirectDetail(containerId, itemAttr, contentPrefix) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            const listView = container.querySelector('.list-view');
+            const items = container.querySelectorAll(`[data-${itemAttr}]`);
+            const backBtns = container.querySelectorAll('.back-btn');
+            const detailViews = container.querySelectorAll('.detail-view');
+
+            function showList() {
+                listView.classList.remove('hidden');
+                detailViews.forEach(dv => dv.classList.remove('active'));
+            }
+
+            items.forEach(item => {
+                item.addEventListener('click', () => {
+                    const key = item.dataset[itemAttr];
+                    const detailView = document.getElementById(contentPrefix + key);
+                    if (detailView) {
+                        listView.classList.add('hidden');
+                        detailViews.forEach(dv => dv.classList.remove('active'));
+                        detailView.classList.add('active');
+                        container.querySelector('.overlay-body')?.scrollTo(0, 0);
+                    }
+                });
             });
 
-            mobileRecentOverlay.addEventListener('click', () => {
-                closeMobileRecentPanel();
+            backBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const targetId = btn.dataset.back;
+                    if (targetId && targetId === listView.id) {
+                        showList();
+                    }
+                    container.querySelector('.overlay-body')?.scrollTo(0, 0);
+                });
             });
-
-            // 点击面板内的项目后关闭
-            mobileRecentPanel.addEventListener('click', (e) => {
-                if (e.target.closest('.mrp-item')) {
-                    setTimeout(closeMobileRecentPanel, 150);
-                }
-            });
-
-            // ==================== 路由与视图切换 ====================
-            function parseHash() {
-                const hash = window.location.hash.replace('#', '') || '/';
-                const parts = hash.split('/').filter(Boolean);
-
-                if (parts.length === 0 || (parts.length === 1 && parts[0] === '')) {
-                    return { view: 'home', category: null, workId: null };
-                }
-                if (parts[0] === 'category' && parts.length >= 2) {
-                    return { view: 'list', category: decodeURIComponent(parts[1]), workId: null };
-                }
-                if (parts[0] === 'detail' && parts.length >= 2) {
-                    return { view: 'detail', category: null, workId: decodeURIComponent(parts[1]) };
-                }
-                return { view: 'home', category: null, workId: null };
-            }
-
-            function navigateToHome() {
-                window.location.hash = '#/';
-            }
-
-            function navigateToCategory(category) {
-                window.location.hash = '#/category/' + encodeURIComponent(category);
-            }
-
-            function navigateToDetail(workId) {
-                window.location.hash = '#/detail/' + encodeURIComponent(workId);
-            }
-
-            function getCurrentRoute() {
-                return parseHash();
-            }
-
-            // ==================== 渲染函数 ====================
-            function renderHome() {
-                const cards = CATEGORY_ORDER.map(cat => {
-                    const config = CATEGORY_CONFIG[cat];
-                    const count = getWorksByCategory(cat).length;
-                    return `
-                    <div class="category-card"
-                    style="--cat-accent: ${config.accent};"
-                    onclick="window._navigateToCategory('${cat}')"
-                    role="button"
-                    tabindex="0"
-                    aria-label="进入${cat}分类">
-                    <span class="category-icon">${config.icon}</span>
-                    <div class="category-label">${cat}</div>
-                    <div class="category-count">${count} 篇作品</div>
-                </div>`;
-            }).join('');
-
-            mainContent.innerHTML = `
-            <div style="max-width:820px; margin:0 auto;">
-            <div style="margin-bottom:32px;">
-            <h2 style="font-size:1.5rem;font-weight:600;color:var(--text-primary);letter-spacing:0.05em;margin-bottom:6px;">探索</h2>
-            <p style="color:var(--text-muted);font-size:0.9rem;">选择一个分类，开始阅读</p>
-        </div>
-        <div class="category-grid">${cards}</div>
-    </div>
-    `;
-    // 恢复主背景色
-    mainContent.style.background = 'var(--main-bg)';
-}
-
-window._navigateToCategory = function(category) {
-    navigateToCategory(category);
-};
-
-function renderCategoryList(category) {
-    const works = getWorksByCategory(category);
-    const config = CATEGORY_CONFIG[category];
-    // 设置分类背景色
-    mainContent.style.background = config.bg;
-
-    let listHTML = '';
-    if (works.length === 0) {
-        listHTML = `
-        <div style="text-align:center;padding:60px 20px;color:var(--text-muted);">
-        <p style="font-size:1.1rem;">该分类下暂无作品</p>
-        <p style="font-size:0.85rem;margin-top:8px;">敬请期待</p>
-    </div>`;
-} else {
-    listHTML = works.map(w => `
-        <div class="work-card" onclick="window._navigateToDetail('${w.id}')" role="button" tabindex="0">
-        <img class="work-card-cover" src="${w.cover}" alt="${w.title}封面" loading="lazy" onerror="this.style.background='#e0d8cc';">
-        <div class="work-card-info">
-        <div class="work-card-title">${w.title}</div>
-        <div class="work-card-meta">${formatDate(w.date)}</div>
-        <div class="work-card-summary">${w.summary}</div>
-    </div>
-</div>
-`).join('');
-}
-
-mainContent.innerHTML = `
-<div style="max-width:780px; margin:0 auto;">
-<div class="breadcrumb">
-<span onclick="window._navigateToHome()">首页</span>
-<span class="sep">›</span>
-<span class="current">${category}</span>
-</div>
-<div style="display:flex;align-items:center;gap:12px;margin-bottom:22px;">
-<span style="font-size:2rem;">${config.icon}</span>
-<h2 style="font-size:1.5rem;font-weight:600;color:var(--text-primary);letter-spacing:0.05em;">${category}</h2>
-<span style="color:var(--text-muted);font-size:0.85rem;">共 ${works.length} 篇</span>
-</div>
-<div class="work-list">${listHTML}</div>
-</div>
-`;
-}
-
-window._navigateToHome = function() {
-    navigateToHome();
-};
-
-function renderDetail(workId) {
-    const work = getWorkById(workId);
-    if (!work) {
-        mainContent.innerHTML = `
-        <div style="text-align:center;padding:80px 20px;">
-        <p style="font-size:1.2rem;color:var(--text-muted);">作品未找到</p>
-        <button class="back-btn" onclick="window._navigateToHome()">
-        <span class="arrow">←</span> 返回首页
-    </button>
-</div>`;
-mainContent.style.background = 'var(--main-bg)';
-return;
-}
-
-const config = CATEGORY_CONFIG[work.category];
-mainContent.style.background = config.bg;
-
-const contentParagraphs = work.content
-.split('\n\n')
-.filter(p => p.trim())
-.map(p => `<p>${p.trim()}</p>`)
-.join('\n');
-
-mainContent.innerHTML = `
-<div class="detail-page">
-<div class="breadcrumb">
-<span onclick="window._navigateToHome()">首页</span>
-<span class="sep">›</span>
-<span onclick="window._navigateToCategory('${work.category}')">${work.category}</span>
-<span class="sep">›</span>
-<span class="current">${work.title}</span>
-</div>
-<button class="back-btn" onclick="window._navigateToCategory('${work.category}')">
-<span class="arrow">←</span> 返回${work.category}列表
-</button>
-<img class="detail-cover" src="${work.cover}" alt="${work.title}封面" loading="eager" onerror="this.style.background='#e0d8cc';this.style.minHeight='200px';">
-<h1 class="detail-title">${work.title}</h1>
-<div class="detail-meta">${formatDate(work.date)} · ${work.category}</div>
-<div class="detail-body">${contentParagraphs}</div>
-<div style="margin-top:36px;padding-top:20px;border-top:1px solid var(--border-subtle);">
-<button class="back-btn" onclick="window._navigateToCategory('${work.category}')">
-<span class="arrow">←</span> 返回${work.category}列表
-</button>
-</div>
-</div>
-`;
-}
-
-window._navigateToCategory = function(category) {
-    navigateToCategory(category);
-};
-
-// ==================== 路由变化处理 ====================
-function handleRouteChange() {
-    const route = getCurrentRoute();
-    switch (route.view) {
-        case 'home':
-        renderHome();
-        break;
-        case 'list':
-        if (route.category && CATEGORY_CONFIG[route.category]) {
-            renderCategoryList(route.category);
-        } else {
-            navigateToHome();
+            showList();
         }
-        break;
-        case 'detail':
-        if (route.workId) {
-            renderDetail(route.workId);
-        } else {
-            navigateToHome();
+
+        setupDirectDetail('proseBody', 'prose', 'proseContent-');
+        setupDirectDetail('essaysBody', 'essay', 'essayContent-');
+
+        // 摄影灯箱
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightboxImg');
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+            document.body.classList.remove('lightbox-open');
         }
-        break;
-        default:
-        navigateToHome();
-    }
-    // 滚动到顶部
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    // 在移动端滚动main-content到顶部
-    mainContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
+        document.querySelector('.lightbox .close-lightbox')?.addEventListener('click', closeLightbox);
+        lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
 
-window.addEventListener('hashchange', handleRouteChange);
+        // 滚动指示器
+        document.getElementById('scrollIndicator')?.addEventListener('click', () => {
+            document.getElementById('section-novels')?.scrollIntoView({ behavior: 'smooth' });
+        });
 
-// ==================== 初始化 ====================
-function init() {
-    renderRecentWorks();
-    // 如果没有hash或hash无效，设置默认hash
-    const route = getCurrentRoute();
-    if (route.view === 'home' && !window.location.hash) {
-        // 静默设置hash
-        window.location.hash = '#/';
-    }
-    handleRouteChange();
-}
-
-// ==================== 移动端点击主内容时关闭面板 ====================
-mainContent.addEventListener('click', (e) => {
-    if (mobileRecentPanel.classList.contains('open')) {
-        // 如果点击的不是面板内的元素
-        if (!mobileRecentPanel.contains(e.target) && e.target !== mtRecentBtn) {
-            closeMobileRecentPanel();
-        }
-    }
-});
-
-// ==================== 键盘导航支持 ====================
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-        if (mobileRecentPanel.classList.contains('open')) {
-            closeMobileRecentPanel();
-        }
-    }
-});
-
-// ==================== 启动 ====================
-init();
-
-// 暴露必要的函数到全局作用域
-window._navigateToHome = navigateToHome;
-window._navigateToCategory = navigateToCategory;
-window._navigateToDetail = navigateToDetail;
-})();
-</script>
+        // 初始化
+        showNovelsList();
+        console.log('🌸 木千余 · 记录我一生的故事 已加载');
+        console.log('🔒 已启用内容保护：禁止复制、截图、右键保存');
+    })();
+    </script>
 </body>
 </html>
